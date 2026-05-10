@@ -1,0 +1,6 @@
+@NeromylosSuites_HostAddress = http://localhost:5047
+
+GET {{NeromylosSuites_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
