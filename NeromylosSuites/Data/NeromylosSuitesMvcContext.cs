@@ -42,8 +42,8 @@ namespace NeromylosSuites.Data
                     .OnDelete(DeleteBehavior.Restrict)
                     .HasConstraintName("FK_Users_RoleId");
 
-                entity.HasIndex(e => e.Username, "IX_Users_Username").IsUnique();
-                entity.HasIndex(e => e.Email, "IX_Users_Email").IsUnique();
+                entity.HasIndex(e => e.Username, "UQ_Users_Username").IsUnique();
+                entity.HasIndex(e => e.Email, "UQ_Users_Email").IsUnique();
                 entity.HasIndex(e => e.Lastname, "IX_Users_Lastname");
                 entity.HasIndex(e => e.RoleId, "IX_Users_RoleId");
             });
@@ -66,7 +66,7 @@ namespace NeromylosSuites.Data
             {
                 entity.Property(e => e.Firstname).HasMaxLength(50);
                 entity.Property(e => e.Lastname).HasMaxLength(50);
-                entity.Property(e => e.Email).HasMaxLength(50);
+                entity.Property(e => e.Email).HasMaxLength(100);
                 entity.Property(e => e.PhoneNumber).HasMaxLength(50);
                 entity.Property(e => e.CountryCode).HasMaxLength(2);
 
