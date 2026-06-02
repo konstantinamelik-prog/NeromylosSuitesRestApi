@@ -16,6 +16,9 @@ namespace NeromylosSuites.DTO
         [Required(ErrorMessage = "The {0} field is required.")]
         public decimal? TotalPrice { get; set; }
 
+        [DisplayFormat(DataFormatString ="{}")]
+        public string? SpecialRequests { get; set; }
+
         [Required(ErrorMessage = "The {0} field is required.")]
         public string? Status { get; set; } = "PENDING";
 
