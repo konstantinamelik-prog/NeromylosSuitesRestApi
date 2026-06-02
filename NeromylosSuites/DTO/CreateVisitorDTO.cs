@@ -13,7 +13,7 @@ namespace NeromylosSuites.DTO
         public string? Lastname { get; set; }
 
         [Required(ErrorMessage = "The {0} field is required.")]
-        [StringLength(50, MinimumLength = 2, ErrorMessage = "Email must not exceed 50 characters.")]
+        [StringLength(100, MinimumLength = 2, ErrorMessage = "Email must not exceed 100 characters.")]
         [EmailAddress(ErrorMessage = "Invalid email address.")]
         public string? Email { get; set; }
 
@@ -21,5 +21,8 @@ namespace NeromylosSuites.DTO
         [StringLength(15, MinimumLength = 10, ErrorMessage = "Phone number must be at least 10 characters and " +
             "not exceed 15 characters.")]
         public string? PhoneNumber { get; set; }
+
+        [StringLength(2, MinimumLength = 2, ErrorMessage = "Country Code must be 2 characters, based on Country's 2-letter ISO Code standards")]
+        public string? CountryCode { get; set; }
     }
 }
