@@ -9,7 +9,7 @@ namespace NeromylosSuites.DTO
         public string? Username { get; set; }
 
         [Required(ErrorMessage = "The {0} field is required.")]
-        [StringLength(50, MinimumLength = 2, ErrorMessage = "Email must not exceed 50 characters.")]
+        [StringLength(100, MinimumLength = 2, ErrorMessage = "Email must not exceed 100 characters.")]
         [EmailAddress(ErrorMessage = "Invalid email address.")]
         public string? Email { get; set; }
 
