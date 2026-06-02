@@ -13,7 +13,7 @@ namespace NeromylosSuites.Repositories
         }
 
         public async Task<User?> GetUserByUsernameAsync(string username) => 
-            await _context.Users.SingleOrDefaultAsync(u => u.Username == username);
+            await _context.Users.SingleOrDefaultAsync(u => u.Username == username || u.Email == username);
 
         public async Task<User?> GetUserByEmailAsync(string email) =>
             await _context.Users.SingleOrDefaultAsync(e => e.Email == email);
