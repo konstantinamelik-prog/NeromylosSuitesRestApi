@@ -109,6 +109,7 @@ namespace NeromylosSuites.Data
                 entity.Property(e => e.Description).HasMaxLength(255);
                 entity.Property(e => e.Status).HasMaxLength(20);
                 entity.Property(e => e.ImageUrl).HasMaxLength(255);
+                entity.Property(e => e.Price).HasColumnType("decimal(10,2)");
 
                 entity.HasIndex(e => e.RoomNumber, "IX_Room_RoomNumber").IsUnique();
                 entity.HasIndex(e => e.Name, "IX_Room_Name");
