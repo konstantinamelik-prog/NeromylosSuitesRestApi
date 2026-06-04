@@ -2,7 +2,7 @@
 
 namespace NeromylosSuites.DTO
 {
-    public class RoomReadOnlyDTO
+    public record RoomReadOnlyDTO
     {
         public int Id { get; set; }
         public int? RoomNumber { get; set; }

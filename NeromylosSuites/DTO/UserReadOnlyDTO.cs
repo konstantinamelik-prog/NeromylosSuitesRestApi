@@ -1,6 +1,6 @@
 ﻿namespace NeromylosSuites.DTO
 {
-    public class UserReadOnlyDTO
+    public record UserReadOnlyDTO
     {
         public int Id { get; set; }
         public string Username { get; set; } = null!;

@@ -2,7 +2,7 @@
 
 namespace NeromylosSuites.DTO
 {
-    public class CreateBookingDTO
+    public record CreateBookingDTO
     {
         [Required(ErrorMessage = "The {0} field is required.")]
         public DateTime? CheckIn { get; set; }
@@ -16,7 +16,7 @@ namespace NeromylosSuites.DTO
         [Required(ErrorMessage = "The {0} field is required.")]
         public decimal? TotalPrice { get; set; }
 
-        [DisplayFormat(DataFormatString ="{}")]
+        [StringLength(255, ErrorMessage = "Special Requests must be maximum 255 characters.")]
         public string? SpecialRequests { get; set; }
 
         [Required(ErrorMessage = "The {0} field is required.")]

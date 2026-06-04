@@ -1,6 +1,6 @@
 ﻿namespace NeromylosSuites.DTO
 {
-    public class BookingReadOnlyDTO
+    public record BookingReadOnlyDTO
     {
         public int Id { get; set; }
         public DateTime? CheckIn { get; set; }

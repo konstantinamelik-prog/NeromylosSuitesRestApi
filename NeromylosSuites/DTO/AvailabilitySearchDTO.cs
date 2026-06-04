@@ -2,7 +2,7 @@
 
 namespace NeromylosSuites.DTO
 {
-    public class AvailabilitySearchDTO
+    public record AvailabilitySearchDTO
     {
         [Required(ErrorMessage = "The {0} field is required.")]
         public DateTime? CheckIn { get; set; }
