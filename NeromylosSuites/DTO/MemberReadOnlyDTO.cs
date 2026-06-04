@@ -1,0 +1,13 @@
+﻿namespace NeromylosSuites.DTO
+{
+    public record MemberReadOnlyDTO
+    {
+        public int Id { get; set; }
+        public string Username { get; set; } = null!;
+        public string Email { get; set; } = null!;
+        public string Firstname { get; set; } = null!;
+        public string Lastname { get; set; } = null!;
+        public string PhoneNumber { get; set; } = null!;
+        public string? CountryCode { get; set; }
+    }
+}
