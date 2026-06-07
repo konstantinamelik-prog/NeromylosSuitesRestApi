@@ -13,13 +13,19 @@ namespace NeromylosSuites.Repositories
         }
 
         public async Task<User?> GetUserByUsernameAsync(string username) => 
-            await _context.Users.SingleOrDefaultAsync(u => u.Username == username || u.Email == username);
+            await _context.Users
+            .Include(u => u.Role)
+            .SingleOrDefaultAsync(u => u.Username == username || u.Email == username);
 
         public async Task<User?> GetUserByEmailAsync(string email) =>
-            await _context.Users.SingleOrDefaultAsync(e => e.Email == email);
+            await _context.Users
+            .Include(u => u.Role)
+            .SingleOrDefaultAsync(e => e.Email == email);
 
         public async Task<User?> GetUserByLastnameAsync(string lastname) =>
-            await _context.Users.FirstOrDefaultAsync(u => u.Lastname == lastname);
+            await _context.Users
+            .Include(u => u.Role)
+            .FirstOrDefaultAsync(u => u.Lastname == lastname);
 
         public async Task<List<Booking>> GetUserBookingsAsync(int userId)
         {
@@ -33,7 +39,8 @@ namespace NeromylosSuites.Repositories
             return bookings;
         }
 
-        public async Task<PaginatedResult<User>> GetPaginatedUsersAsync(int pageNumber, int pageSize, List<Expression<Func<User, bool>>> predicates)
+        public async Task<PaginatedResult<User>> GetPaginatedUsersAsync(int pageNumber, int pageSize, 
+            List<Expression<Func<User, bool>>> predicates)
         {
             int totalRecords;
             IQueryable<User> query = _context.Users;
