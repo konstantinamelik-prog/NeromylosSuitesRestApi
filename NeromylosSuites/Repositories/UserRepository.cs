@@ -27,18 +27,6 @@ namespace NeromylosSuites.Repositories
             .Include(u => u.Role)
             .FirstOrDefaultAsync(u => u.Lastname == lastname);
 
-        public async Task<List<Booking>> GetUserBookingsAsync(int userId)
-        {
-            List<Booking> bookings;
-
-            bookings = await _context.Users
-                .Where(u => u.Id == userId)
-                .SelectMany(u => u.Bookings)
-                .ToListAsync();
-
-            return bookings;
-        }
-
         public async Task<PaginatedResult<User>> GetPaginatedUsersAsync(int pageNumber, int pageSize, List<Expression<Func<User, bool>>> predicates)
         {
             int totalRecords;
