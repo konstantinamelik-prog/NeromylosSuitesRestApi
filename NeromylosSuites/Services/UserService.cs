@@ -32,6 +32,19 @@ namespace NeromylosSuites.Services
             _configuration = configuration;
         }
 
+        public async Task<User> VerifyAndGetUserAsync(UserLoginDTO credentials)
+        {
+            var user = await _unitOfWork.UserRepository.GetUserByUsernameAsync(credentials.Username);
+
+            if (user == null || !_encryptionUtil.IsValidPassword(credentials.Password, user.Password))
+            {
+                throw new EntityNotAuthorizedException("User", "Bad Credentials");
+            }
+
+            _logger.LogInformation("User with username {Username} verified for login", credentials.Username);
+            return user;
+        }
+
         public async Task<UserReadOnlyDTO> GetUserByUsernameAsync(string username)
         {
             var user = await _unitOfWork.UserRepository.GetUserByUsernameAsync(username);
@@ -51,6 +64,28 @@ namespace NeromylosSuites.Services
                 throw new EntityNotFoundException("User", $"User with id: {id} not found");
             }
             _logger.LogInformation("User found: {Id}", id);
+            return _mapper.Map<UserReadOnlyDTO>(user);
+        }
+
+        public async Task<UserReadOnlyDTO> GetUserByEmailAsync(string email)
+        {
+            var user = await _unitOfWork.UserRepository.GetUserByEmailAsync(email);
+            if (user == null)
+            {
+                throw new EntityNotFoundException("User", $"User with Email: {email} not found");
+            }
+            _logger.LogInformation("User found: {Email}", email);
+            return _mapper.Map<UserReadOnlyDTO>(user);
+        }
+
+        public async Task<UserReadOnlyDTO> GetUserByLastnameAsync(string lastname)
+        {
+            var user = await _unitOfWork.UserRepository.GetUserByLastnameAsync(lastname);
+            if (user == null)
+            {
+                throw new EntityNotFoundException("User", $"User with Lastname: {lastname} not found");
+            }
+            _logger.LogInformation("User found: {Lastname}", lastname);
             return _mapper.Map<UserReadOnlyDTO>(user);
         }
 
@@ -88,19 +123,6 @@ namespace NeromylosSuites.Services
 
             _logger.LogInformation("Retrieved {Count} users", dtoResult.Data.Count);
             return dtoResult;
-        }
-
-        public async Task<User> VerifyAndGetUserAsync(UserLoginDTO credentials)
-        {
-            var user = await _unitOfWork.UserRepository.GetUserByUsernameAsync(credentials.Username);
-
-            if (user == null || !_encryptionUtil.IsValidPassword(credentials.Password, user.Password))
-            {
-                throw new EntityNotAuthorizedException("User", "Bad Credentials");
-            }
-
-            _logger.LogInformation("User with username {Username} verified for login", credentials.Username);
-            return user;
         }
 
         public string CreateUserToken(User user)
