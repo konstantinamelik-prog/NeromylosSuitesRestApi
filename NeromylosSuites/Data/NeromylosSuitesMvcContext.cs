@@ -59,6 +59,7 @@ namespace NeromylosSuites.Data
                     .HasConstraintName("FK_Members_UserId");
 
                 entity.HasIndex(e => e.CountryCode, "IX_Members_CountryCode");
+                entity.HasIndex(e => e.PhoneNumber, "IX_Members_PhoneNumber");
                 entity.HasIndex(e => e.UserId, "IX_Members_UserId").IsUnique();
             });
 
@@ -129,6 +130,8 @@ namespace NeromylosSuites.Data
                     .OnDelete(DeleteBehavior.Cascade);
 
                 entity.HasIndex(e => e.SeasonName, "IX_SeasonalPrices_SeasonName");
+                entity.HasIndex(e => e.DateFrom, "IX_SeasonalPrices_DateFrom");
+                entity.HasIndex(e => e.DateTo, "IX_SeasonalPrices_DateTo");
             });
         }
     }
