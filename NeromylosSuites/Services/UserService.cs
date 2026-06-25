@@ -32,7 +32,7 @@ namespace NeromylosSuites.Services
             _configuration = configuration;
         }
 
-        public async Task<User> VerifyAndGetUserAsync(UserLoginDTO credentials)
+        public async Task<LoginResultDTO> LoginAsync(UserLoginDTO credentials)
         {
             var user = await _unitOfWork.UserRepository.GetUserByUsernameAsync(credentials.Username);
 
@@ -42,7 +42,12 @@ namespace NeromylosSuites.Services
             }
 
             _logger.LogInformation("User with username {Username} verified for login", credentials.Username);
-            return user;
+
+            return new LoginResultDTO
+            {
+                User = _mapper.Map<UserReadOnlyDTO>(user),
+                Token = CreateUserToken(user)
+            };
         }
 
         public async Task<UserReadOnlyDTO> GetUserByUsernameAsync(string username)
@@ -58,7 +63,7 @@ namespace NeromylosSuites.Services
 
         public async Task<UserReadOnlyDTO> GetUserByIdAsync(int id)
         {
-            var user = await _unitOfWork.UserRepository.GetByIdAsync(id);
+            var user = await _unitOfWork.UserRepository.GetUserByIdAsync(id);
             if (user == null)
             {
                 throw new EntityNotFoundException("User", $"User with id: {id} not found");
@@ -75,17 +80,6 @@ namespace NeromylosSuites.Services
                 throw new EntityNotFoundException("User", $"User with Email: {email} not found");
             }
             _logger.LogInformation("User found: {Email}", email);
-            return _mapper.Map<UserReadOnlyDTO>(user);
-        }
-
-        public async Task<UserReadOnlyDTO> GetUserByLastnameAsync(string lastname)
-        {
-            var user = await _unitOfWork.UserRepository.GetUserByLastnameAsync(lastname);
-            if (user == null)
-            {
-                throw new EntityNotFoundException("User", $"User with Lastname: {lastname} not found");
-            }
-            _logger.LogInformation("User found: {Lastname}", lastname);
             return _mapper.Map<UserReadOnlyDTO>(user);
         }
 
@@ -125,7 +119,7 @@ namespace NeromylosSuites.Services
             return dtoResult;
         }
 
-        public string CreateUserToken(User user)
+        private string CreateUserToken(User user)
         {
             var secretKey = _configuration["Jwt:Secret"]!;
             var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(secretKey));
