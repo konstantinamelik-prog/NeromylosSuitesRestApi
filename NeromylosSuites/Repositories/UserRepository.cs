@@ -12,6 +12,11 @@ namespace NeromylosSuites.Repositories
         {
         }
 
+        public async Task<User?> GetUserByIdAsync(int id) =>
+            await _context.Users
+                .Include(u => u.Role)
+                .FirstOrDefaultAsync(u => u.Id == id);
+
         public async Task<User?> GetUserByUsernameAsync(string username) => 
             await _context.Users
             .Include(u => u.Role)
@@ -21,11 +26,6 @@ namespace NeromylosSuites.Repositories
             await _context.Users
             .Include(u => u.Role)
             .SingleOrDefaultAsync(e => e.Email == email);
-
-        public async Task<User?> GetUserByLastnameAsync(string lastname) =>
-            await _context.Users
-            .Include(u => u.Role)
-            .FirstOrDefaultAsync(u => u.Lastname == lastname);
 
         public async Task<PaginatedResult<User>> GetPaginatedUsersAsync(int pageNumber, int pageSize, List<Expression<Func<User, bool>>> predicates)
         {
