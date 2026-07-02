@@ -27,6 +27,12 @@ namespace NeromylosSuites.Repositories
             .Include(u => u.Role)
             .SingleOrDefaultAsync(e => e.Email == email);
 
+        public async Task<User?> GetUserWithMemberByIdAsync(int id) =>
+            await _context.Users
+            .Include(u => u.Role)
+            .Include(u => u.Member)
+            .FirstOrDefaultAsync(u => u.Id == id);
+
         public async Task<PaginatedResult<User>> GetPaginatedUsersAsync(int pageNumber, int pageSize, List<Expression<Func<User, bool>>> predicates)
         {
             int totalRecords;
