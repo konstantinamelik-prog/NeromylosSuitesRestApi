@@ -14,7 +14,7 @@ namespace NeromylosSuites.DTO
         public string? Email { get; set; }
 
         [Required(ErrorMessage = "The {0} field is required.")]
-        [RegularExpression(@"(?=.*?[A-Z])(?=.*?[a-z])(?=.*?\d)(?=.*?\W)^.{8,}$",
+        [RegularExpression(@"^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?\d)(?=.*?\W).{8,}$",
             ErrorMessage = "Password must contain at least one uppercase, one lowercase, " +
             "one digit, and one special character.")]
         public string? Password { get; set; }
