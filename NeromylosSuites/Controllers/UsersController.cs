@@ -87,7 +87,7 @@ namespace NeromylosSuites.Controllers
         /// </summary>
         /// <param name="pageNumber">The page number (1-based). Default is 1.</param>
         /// <param name="pageSize">The number of items per page. Default is 10.</param>
-        /// <param name="filters">Optional filters for username, email, and role.</param>
+        /// <param name="filters">Optional filters for username, email, lastname, and role.</param>
         /// <returns>A paginated list of users matching the filters.</returns>
         /// <response code="200">Returns the paginated user list.</response>
         /// <response code="401">If the request is not authenticated.</response>
