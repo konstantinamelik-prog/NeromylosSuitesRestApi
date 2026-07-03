@@ -13,12 +13,15 @@ namespace NeromylosSuites.Repositories
         }
 
         public async Task<Member?> GetMemberByPhoneNumberAsync(string phonenumber) => 
-            await _context.Members.FirstOrDefaultAsync(m => m.PhoneNumber == phonenumber);
+            await _context.Members
+            .Include(m => m.User)
+            .FirstOrDefaultAsync(m => m.PhoneNumber == phonenumber);
 
         public async Task<User?> GetUserMemberByUsernameAsync(string username)
         {
             var UserMember = await _context.Users
                 .Include(u => u.Member)
+                .Include(u => u.Role)
                 .Where(u => u.Username == username && u.Member != null)
                 .SingleOrDefaultAsync();
 
@@ -54,6 +57,7 @@ namespace NeromylosSuites.Repositories
 
             var usersWithRoleMember = await _context.Users
                 .Include(u => u.Member)
+                .Include(u => u.Role)
                 .Where(u => u.Member != null)
                 .OrderBy(u => u.Id)
                 .Skip(skip)
@@ -71,6 +75,7 @@ namespace NeromylosSuites.Repositories
         {
             IQueryable<User> query = _context.Users
                 .Include(u => u.Member)
+                .Include(u => u.Role)
                 .Where(u => u.Member != null);
 
             if (predicates != null && predicates.Count > 0)

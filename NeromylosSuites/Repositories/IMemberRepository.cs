@@ -6,7 +6,6 @@ namespace NeromylosSuites.Repositories
 {
     public interface IMemberRepository : IBaseRepository<Member>
     {
-
         Task<Member?> GetMemberByPhoneNumberAsync(string phonenumber);
         Task<User?> GetUserMemberByUsernameAsync(string username);
         Task<List<Booking>> GetMemberBookingsAsync(int userId);
