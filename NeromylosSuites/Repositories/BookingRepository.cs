@@ -12,53 +12,36 @@ namespace NeromylosSuites.Repositories
         {
         }
 
-        public async Task<User?> GetBookingUserAsync(int bookingId)
+        public async Task<Booking?> GetBookingByIdAsync(int bookingId)
         {
-            var booking = await _context.Bookings
+            return await _context.Bookings
                 .Include(b => b.User)
-                .Where(b => b.Id == bookingId && b.User != null)
-                .FirstOrDefaultAsync();
-
-            return booking?.User;
-        }
-
-        public async Task<Visitor?> GetBookingVisitorAsync(int bookingId)
-        {
-            var booking = await _context.Bookings
                 .Include(b => b.Visitor)
-                .Where(b => b.Id == bookingId && b.Visitor != null)
-                .FirstOrDefaultAsync();
-
-            return booking?.Visitor;
+                .Include(b => b.Rooms)
+                .FirstOrDefaultAsync(b => b.Id == bookingId);
         }
 
-        public async Task<List<Room>> GetBookingRoomsAsync(int bookingId)
+        public async Task<List<Booking>> GetBookingsByUserIdAsync(int userId)
         {
-            return await _context.Bookings
-                .Where(b => b.Id == bookingId)
-                .SelectMany(b => b.Rooms)
+            List<Booking> bookings = await _context.Bookings
+                .Include(b => b.User)
+                .Include(b => b.Visitor)
+                .Include(b => b.Rooms)
+                .Where(b => b.UserId == userId)
                 .ToListAsync();
+
+            return bookings;
         }
 
-        public async Task<List<Booking>> GetBookingsByCheckInAsync(DateTime checkIn)
+        public async Task<List<Booking>> GetBookingsByVisitorIdAsync(int visitorId)
         {
-            return await _context.Bookings
-                .Where(b => b.CheckIn == checkIn)
+            List<Booking> bookings = await _context.Bookings
+                .Include(b => b.Visitor)
+                .Include(b => b.Rooms)
+                .Where(b => b.VisitorId == visitorId)
                 .ToListAsync();
-        }
 
-        public async Task<List<Booking>> GetBookingsByCheckOutAsync(DateTime checkOut)
-        {
-            return await _context.Bookings
-                .Where(b => b.CheckOut == checkOut)
-                .ToListAsync();
-        }
-
-        public async Task<List<Booking>> GetBookingsByStatusAsync(string status)
-        {
-            return await _context.Bookings
-                .Where(b => b.Status == status)
-                .ToListAsync();
+            return bookings;
         }
 
         public async Task<PaginatedResult<Booking>> GetPaginatedBookingsAsync(int pageNumber, int pageSize)
@@ -68,6 +51,7 @@ namespace NeromylosSuites.Repositories
             int totalRecords = await _context.Bookings.CountAsync();
 
             var bookings = await _context.Bookings
+                .Include(b => b.Rooms)
                 .OrderBy(b => b.Id)
                 .Skip(skip)
                 .Take(pageSize)
