@@ -12,9 +12,6 @@ namespace NeromylosSuites.Repositories
         {
         }
 
-        public async Task<Visitor?> GetVisitorByLastnameAsync(string lastname) =>
-            await _context.Visitors.FirstOrDefaultAsync(v => v.Lastname == lastname);
-
         public async Task<Visitor?> GetVisitorByEmailAsync(string email) => 
             await _context.Visitors.FirstOrDefaultAsync(v => v.Email == email);
 
@@ -31,6 +28,17 @@ namespace NeromylosSuites.Repositories
                 .ToListAsync();
 
             return bookings;
+        }
+
+        public async Task<List<Visitor>> GetVisitorsByCountryCodeAsync(string countryCode)
+        {
+            List<Visitor> visitors;
+
+            visitors = await _context.Visitors
+                .Where(v => v.CountryCode == countryCode)
+                .ToListAsync();
+
+            return visitors;
         }
 
         public async Task<PaginatedResult<Visitor>> GetPaginatedVisitorsAsync(int pageNumber, int pageSize)
