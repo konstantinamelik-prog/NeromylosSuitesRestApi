@@ -26,6 +26,33 @@ namespace NeromylosSuites.Services
             _logger = logger;
         }
 
+        public async Task<UserReadOnlyDTO> SignUpMemberAsync(MemberSignupDTO request)
+        {
+            var member = _mapper.Map<Member>(request);
+            var user = _mapper.Map<User>(request);
+
+            var existingUser = await _unitOfWork.UserRepository.GetUserByUsernameAsync(user.Username);
+
+            if (existingUser != null)
+            {
+                throw new EntityAlreadyExistsException("User", $"User with username {existingUser.Username} already exists");
+            }
+
+            var existingEmail = await _unitOfWork.UserRepository.GetUserByEmailAsync(user.Email);
+            if (existingEmail != null)
+            {
+                throw new EntityAlreadyExistsException("User", $"User with email {existingEmail.Email} already exists");
+            }
+
+            user.Member = member;
+            user.Password = _encryptionUtil.Encrypt(user.Password);
+            await _unitOfWork.UserRepository.AddAsync(user);
+
+            await _unitOfWork.SaveAsync();
+            _logger.LogInformation("Member {Username} signed up successfully.", user.Username);
+            return _mapper.Map<UserReadOnlyDTO>(user);
+        }
+
         public async Task<MemberReadOnlyDTO> GetMemberByPhoneNumberAsync(string phoneNumber)
         {
             var member = await _unitOfWork.MemberRepository.GetMemberByPhoneNumberAsync(phoneNumber);
@@ -142,27 +169,6 @@ namespace NeromylosSuites.Services
 
             _logger.LogInformation("Retrieved {Count} users", dtoResult.Data.Count);
             return dtoResult;
-        }
-
-        public async Task<UserReadOnlyDTO> SignUpUserAsync(MemberSignupDTO request)
-        {
-            var member = _mapper.Map<Member>(request);
-            var user = _mapper.Map<User>(request);
-
-            var existingUser = await _unitOfWork.UserRepository.GetUserByUsernameAsync(user.Username);
-
-            if(existingUser != null)
-            {
-                throw new EntityAlreadyExistsException("User", $"User with username {existingUser.Username} already exists");
-            }
-
-            user.Member = member;
-            user.Password = _encryptionUtil.Encrypt(user.Password);
-            await _unitOfWork.UserRepository.AddAsync(user);
-
-            await _unitOfWork.SaveAsync();
-            _logger.LogInformation("Member {Username} signed up successfully.", user.Username);
-            return _mapper.Map<UserReadOnlyDTO>(user);
         }
     }
 }

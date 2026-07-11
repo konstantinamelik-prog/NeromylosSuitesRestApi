@@ -6,7 +6,7 @@ namespace NeromylosSuites.Services
 {
     public interface IMemberService
     {
-        Task<UserReadOnlyDTO> SignUpUserAsync(MemberSignupDTO request);
+        Task<UserReadOnlyDTO> SignUpMemberAsync(MemberSignupDTO request);
         Task<MemberReadOnlyDTO> GetMemberByPhoneNumberAsync(string phoneNumber);
         Task<MemberReadOnlyDTO> GetUserMemberByUsernameAsync(string username);
         Task<UserReadOnlyDTO> GetUserWithMemberByIdAsync(int userId);
