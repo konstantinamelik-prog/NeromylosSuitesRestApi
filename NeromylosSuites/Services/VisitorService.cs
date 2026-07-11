@@ -1,9 +1,11 @@
 ﻿using AutoMapper;
 using NeromylosSuites.Core;
+using NeromylosSuites.Core.Filters;
 using NeromylosSuites.DTO;
+using NeromylosSuites.Exceptions;
 using NeromylosSuites.Models;
 using NeromylosSuites.Repositories;
-using Serilog;
+using System.Linq.Expressions;
 
 namespace NeromylosSuites.Services
 {
@@ -12,7 +14,6 @@ namespace NeromylosSuites.Services
         private readonly IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
         private readonly ILogger<VisitorService> _logger;
-        private readonly ILogger<VisitorService> logger = new LoggerFactory().AddSerilog().CreateLogger<VisitorService>();
 
         public VisitorService(IUnitOfWork unitOfWork, IMapper mapper, ILogger<VisitorService> logger)
         {
@@ -43,25 +44,101 @@ namespace NeromylosSuites.Services
             return _mapper.Map<VisitorReadOnlyDTO>(visitor);
         }
 
+        public async Task<VisitorReadOnlyDTO> GetVisitorByPhoneNumberAsync(string phoneNumber)
+        {
+            var visitor = await _unitOfWork.VisitorRepository.GetVisitorByPhoneNumberAsync(phoneNumber);
+            if (visitor == null)
+            {
+                throw new EntityNotFoundException("Visitor", $"Visitor with phoneNumber: {phoneNumber} not found");
+            }
+
+            _logger.LogInformation("Visitor with phoneNumber {PhoneNumber} found", phoneNumber);
+            return _mapper.Map<VisitorReadOnlyDTO>(visitor);
+        }
+
+        public async Task<VisitorReadOnlyDTO> GetVisitorByIdAsync(int id)
+        {
+            var visitor = await _unitOfWork.VisitorRepository.GetByIdAsync(id);
+
+            if (visitor == null)
+            {
+                throw new EntityNotFoundException("Visitor", $"Visitor with id: {id} not found");
+            }
+
+            _logger.LogInformation("Visitor with id {Id} found", id);
+            return _mapper.Map<VisitorReadOnlyDTO>(visitor);
+        }
+
+        public async Task<List<BookingReadOnlyDTO>> GetVisitorBookingsAsync(int visitorId)
+        {
+            var visitor = await _unitOfWork.VisitorRepository.GetByIdAsync(visitorId);
+            if (visitor == null)
+            {
+                throw new EntityNotFoundException("Visitor", $"Visitor with visitorId: {visitorId} not found");
+            }
+
+            var bookings = await _unitOfWork.VisitorRepository.GetVisitorBookingsAsync(visitorId);
+
+            _logger.LogInformation("Retrieved {Count} bookings for visitor {VisitorId}", bookings.Count, visitorId);
+            return _mapper.Map<List<BookingReadOnlyDTO>>(bookings);
+        }
+
+        public async Task<List<VisitorReadOnlyDTO>> GetVisitorsByCountryCodeAsync(string countryCode)
+        {
+            var visitors = await _unitOfWork.VisitorRepository.GetVisitorsByCountryCodeAsync(countryCode);
+
+            _logger.LogInformation("Retrieved {Count} visitors with country code {CountryCode}", visitors.Count, countryCode);
+            return _mapper.Map<List<VisitorReadOnlyDTO>>(visitors);
+        }
+
         public async Task<PaginatedResult<VisitorReadOnlyDTO>> GetPaginatedVisitorsAsync(int pageNumber, int pageSize)
         {
             var result = await _unitOfWork.VisitorRepository.GetPaginatedVisitorsAsync(pageNumber, pageSize);
 
             var dtoResult = new PaginatedResult<VisitorReadOnlyDTO>()
             {
-                Data = result.Data.Select(v => new VisitorReadOnlyDTO
-                {
-                    Id = v.Id,
-                    Firstname = v.Firstname,
-                    Lastname = v.Lastname,
-                    Email = v.Email
-                }).ToList(),
+                Data = _mapper.Map<List<VisitorReadOnlyDTO>>(result.Data),
                 TotalRecords = result.TotalRecords,
                 PageNumber = result.PageNumber,
                 PageSize = result.PageSize
             };
-            logger.LogInformation("Retrieved {Count} visitors", dtoResult.Data.Count);
+
+            _logger.LogInformation("Retrieved {Count} visitors", dtoResult.Data.Count);
             return dtoResult;
+        }
+
+        public async Task<PaginatedResult<VisitorReadOnlyDTO>> GetPaginatedVisitorsFilteredAsync(int pageNumber, int pageSize, VisitorFiltersDTO visitorFiltersDTO)
+        {
+            {
+                List<Expression<Func<Visitor, bool>>> predicates = [];
+
+                if (!string.IsNullOrEmpty(visitorFiltersDTO.Email))
+                {
+                    predicates.Add(v => v.Email == visitorFiltersDTO.Email);
+                }
+                if (!string.IsNullOrEmpty(visitorFiltersDTO.Lastname))
+                {
+                    predicates.Add(v => v.Lastname == visitorFiltersDTO.Lastname);
+                }
+                if (!string.IsNullOrEmpty(visitorFiltersDTO.CountryCode))
+                {
+                    predicates.Add(v => v.CountryCode == visitorFiltersDTO.CountryCode);
+                }
+
+                var result = await _unitOfWork.VisitorRepository.GetPaginatedVisitorsFilteredAsync(pageNumber, pageSize,
+                    predicates);
+
+                var dtoResult = new PaginatedResult<VisitorReadOnlyDTO>()
+                {
+                    Data = _mapper.Map<List<VisitorReadOnlyDTO>>(result.Data),
+                    TotalRecords = result.TotalRecords,
+                    PageNumber = result.PageNumber,
+                    PageSize = result.PageSize
+                };
+
+                _logger.LogInformation("Retrieved {Count} users", dtoResult.Data.Count);
+                return dtoResult;
+            }
         }
     }
 }
