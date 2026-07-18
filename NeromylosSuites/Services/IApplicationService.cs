@@ -6,6 +6,6 @@
         IMemberService MemberService { get; }
         IBookingService BookingService { get; }
         IVisitorService VisitorService { get; }
-
+        IRoomService RoomService { get; }
     }
 }
