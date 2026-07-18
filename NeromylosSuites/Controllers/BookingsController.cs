@@ -20,14 +20,24 @@ namespace NeromylosSuites.Controllers
             _applicationService = applicationService;
         }
 
+        /// <summary>
+        /// Created a new booking.
+        /// </summary>
+        /// <param name="createBookingDTO">The booking details.</param>
+        /// <returns>The created booking.</returns>
+        /// <response code="200">Returns the created booking.</response>
+        /// <response code="400">If the request body is invalid.</response>
+        /// <response code="409">If one or more of the requested rooms are no longer available.</response>
         [HttpPost]
-        [Authorize]
+        [AllowAnonymous]
         [ProducesResponseType(typeof(BookingReadOnlyDTO), StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
-        public async Task<ActionResult<BookingReadOnlyDTO>> CreateBookingAsync(CreateBookingDTO createBooking)
+        [ProducesResponseType(StatusCodes.Status409Conflict)]
+        public async Task<ActionResult<BookingReadOnlyDTO>> CreateBookingAsync(
+            [FromBody] CreateBookingDTO createBookingDTO)
         {
-            throw new NotImplementedException();
+            var booking = await _applicationService.BookingService.CreateBookingAsync(createBookingDTO);
+            return CreatedAtAction(nameof(GetBookingById), new { bookingId = booking.Id }, booking);
         }
 
         /// <summary>
@@ -66,7 +76,7 @@ namespace NeromylosSuites.Controllers
         /// <response code="401">If the request is not authenticated.</response>
         /// <response code="403">If the user lacks permission to list bookings.</response>
         /// <response code="404">If no booking exists with the given userId.</response>
-        [HttpGet("by-userId/{userId}")]
+        [HttpGet("bookings-by-userId/{userId}")]
         [Authorize]
         [ProducesResponseType(typeof(List<BookingReadOnlyDTO>), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
@@ -88,7 +98,7 @@ namespace NeromylosSuites.Controllers
         /// <response code="401">If the request is not authenticated.</response>
         /// <response code="403">If the user lacks permission to list bookings.</response>
         /// <response code="404">If no booking exists with the given visitorId.</response>
-        [HttpGet("by-visitorId/{visitorId}")]
+        [HttpGet("bookings-by-visitorId/{visitorId}")]
         [Authorize(Roles = "ADMIN,RECEPTIONIST")]
         [ProducesResponseType(typeof(List<BookingReadOnlyDTO>), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
