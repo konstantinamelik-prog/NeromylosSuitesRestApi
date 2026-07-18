@@ -1,6 +1,4 @@
-﻿using NeromylosSuites.Models;
-
-namespace NeromylosSuites.DTO
+﻿namespace NeromylosSuites.DTO
 {
     public record RoomReadOnlyDTO
     {
@@ -9,8 +7,7 @@ namespace NeromylosSuites.DTO
         public string? Name { get; set; }
         public string? Description { get; set; }
         public int? MaxOccupancy { get; set; }
-        public int? Status { get; set; }
+        public string? Status { get; set; }
         public string? ImageUrl { get; set; }
-        public decimal? Price { get; set; }
     }
 }
