@@ -6,7 +6,7 @@ namespace NeromylosSuites.Services
 {
     public interface IBookingService
     {
-        Task<BookingReadOnlyDTO> CreateBookingAsync(CreateBookingDTO createBooking);
+        Task<BookingReadOnlyDTO> CreateBookingAsync(CreateBookingDTO request);
         Task<BookingReadOnlyDTO> GetBookingByIdAsync(int bookingId);
         Task<List<BookingReadOnlyDTO>> GetBookingsByUserIdAsync(int userId);
         Task<List<BookingReadOnlyDTO>> GetBookingsByVisitorIdAsync(int visitorId);

@@ -12,19 +12,91 @@ namespace NeromylosSuites.Services
     public class BookingService : IBookingService
     {
         private readonly IUnitOfWork _unitOfWork;
+        private readonly IVisitorService _visitorService;
         private readonly IMapper _mapper;
         private readonly ILogger<BookingService> _logger;
 
-        public BookingService(IUnitOfWork unitOfWork, IMapper mapper, ILogger<BookingService> logger)
+        public BookingService(IUnitOfWork unitOfWork, IMapper mapper, 
+            ILogger<BookingService> logger, IVisitorService visitorService)
         {
             _unitOfWork = unitOfWork;
+            _visitorService = visitorService;
             _mapper = mapper;
             _logger = logger;
         }
 
-        public Task<BookingReadOnlyDTO> CreateBookingAsync(CreateBookingDTO createBooking)
+        public async Task<BookingReadOnlyDTO> CreateBookingAsync(CreateBookingDTO request)
         {
-            throw new NotImplementedException();
+            var booking = _mapper.Map<Booking>(request);
+
+            var existingUser = await _unitOfWork.UserRepository.GetUserByEmailAsync(request.Email!);
+
+            if (existingUser != null)
+            {
+                booking.UserId = existingUser.Id;
+            }
+            else
+            {
+                var visitorDTO = new CreateVisitorDTO
+                {
+                    Firstname = request.Firstname,
+                    Lastname = request.Lastname,
+                    Email = request.Email,
+                    PhoneNumber = request.PhoneNumber,
+                    CountryCode = request.CountryCode
+                };
+                var visitor = await _visitorService.CreateVisitorAsync(visitorDTO);
+                booking.VisitorId = visitor.Id;
+            }
+
+            var availableRooms = await _unitOfWork.RoomRepository
+                .GetAvailableRoomsByDateRangeAsync(request.CheckIn!.Value, request.CheckOut!.Value);
+
+            var availableRoomIds = availableRooms.Select(r => r.Id).ToList();
+
+            var requestedRooms = await _unitOfWork.RoomRepository.GetRoomsByIdsAsync(request.RoomIds!); 
+
+            var unavailableRooms = requestedRooms
+                .Where(r => !availableRoomIds.Contains(r.Id))
+                .ToList();
+
+            if (unavailableRooms.Any())
+            {
+                var roomNames = string.Join(", ", unavailableRooms.Select(r => r.Name));
+                throw new EntityAlreadyExistsException("Room",
+                    $"Rooms '{roomNames}' are not available for the selected dates");
+            }
+
+            decimal totalPrice = 0;
+
+            foreach (var room in requestedRooms)
+            {
+                var currentDate = request.CheckIn!.Value;
+                while (currentDate < request.CheckOut!.Value)
+                {
+                    var seasonalPrice = await _unitOfWork.SeasonalPricesRepository
+                        .GetPriceForRoomAndDateAsync(room.Id, currentDate);
+
+                    if (seasonalPrice == null)
+                    {
+                        throw new EntityNotFoundException("SeasonalPrice",
+                            $"No price found for room '{room.Name}' on {currentDate:dd/MM/yyyy}");
+                    }
+
+                    totalPrice += seasonalPrice.Price;
+                    currentDate = currentDate.AddDays(1);
+                }
+            }
+
+            booking.TotalPrice = totalPrice;
+            booking.Rooms = requestedRooms;
+            booking.Status = "PENDING";
+
+            await _unitOfWork.BookingRepository.AddAsync(booking);
+
+            await _unitOfWork.SaveAsync();
+            _logger.LogInformation("Booking request with id: {BookingId} has been successfully registered.", booking.Id);
+            return _mapper.Map<BookingReadOnlyDTO>(booking);
         }
 
         public async Task<BookingReadOnlyDTO> GetBookingByIdAsync(int bookingId)
