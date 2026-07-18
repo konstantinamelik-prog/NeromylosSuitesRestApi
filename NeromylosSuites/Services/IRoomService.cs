@@ -1,7 +1,6 @@
 ﻿using NeromylosSuites.Core;
 using NeromylosSuites.Core.Filters;
 using NeromylosSuites.DTO;
-using NeromylosSuites.Models;
 
 namespace NeromylosSuites.Services
 {
