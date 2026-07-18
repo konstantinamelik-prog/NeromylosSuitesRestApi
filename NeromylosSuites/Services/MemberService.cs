@@ -67,14 +67,14 @@ namespace NeromylosSuites.Services
 
         public async Task<MemberReadOnlyDTO> GetUserMemberByUsernameAsync(string username)
         {
-            var member = await _unitOfWork.MemberRepository.GetUserMemberByUsernameAsync(username);
-            if (member == null)
+            var user = await _unitOfWork.MemberRepository.GetUserMemberByUsernameAsync(username);
+            if (user == null)
             {
                 throw new EntityNotFoundException("Member", $"Member with username: {username} not found");
             }
 
             _logger.LogInformation("Member with username {Username} found", username);
-            return _mapper.Map<MemberReadOnlyDTO>(member);
+            return _mapper.Map<MemberReadOnlyDTO>(user.Member);
         }
 
         public async Task<UserReadOnlyDTO> GetUserWithMemberByIdAsync(int userId)
