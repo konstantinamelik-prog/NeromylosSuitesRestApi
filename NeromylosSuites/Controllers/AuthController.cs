@@ -1,7 +1,6 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using NeromylosSuites.DTO;
-using NeromylosSuites.Exceptions;
 using NeromylosSuites.Services;
 
 namespace NeromylosSuites.Controllers
@@ -20,8 +19,13 @@ namespace NeromylosSuites.Controllers
         }
 
         /// <summary>
-        /// Registers a new member account.
+        /// Sign up a new member.
         /// </summary>
+        /// <param name="memberSignupDTO">The member details</param>
+        /// <returns>The created member-user</returns>
+        /// <response code="201">Returns the created member-user.</response>
+        /// <response code="400">If the request body is invalid.</response>
+        /// <response code="409">If a member-user with the same username or email already exists.</response>
         [HttpPost("register/member")]
         [AllowAnonymous]
         [ProducesResponseType(typeof(UserReadOnlyDTO), StatusCodes.Status201Created)]
@@ -30,19 +34,21 @@ namespace NeromylosSuites.Controllers
         public async Task<ActionResult<UserReadOnlyDTO>> RegisterMember(
             [FromBody] MemberSignupDTO memberSignupDTO)
         {
-            var createUser = await _applicationService.MemberService
-                .SignUpUserAsync(memberSignupDTO);
+            var createMember = await _applicationService.MemberService
+                .SignUpMemberAsync(memberSignupDTO);
 
             return CreatedAtAction(
                 actionName: nameof(UsersController.GetUserById),
                 controllerName: "Users",
-                routeValues: new { id = createUser.Id },
-                value: createUser);
+                routeValues: new { id = createMember.Id },
+                value: createMember);
         }
 
         /// <summary>
         /// Authenticates a user and returns a JWT token.
         /// </summary>
+        /// <param name="credentials">The user credentials</param>
+        /// <returns>The Jwt token.</returns>
         [HttpPost("login")]
         [AllowAnonymous]
         [ProducesResponseType(typeof(JwtTokenDTO), StatusCodes.Status200OK)]
