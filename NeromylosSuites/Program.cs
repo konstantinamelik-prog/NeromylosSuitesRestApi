@@ -67,10 +67,13 @@ namespace NeromylosSuites
                 };
             });
 
+            var corsOrigins = builder.Configuration["Cors:Origin"]!
+                .Split(',', StringSplitOptions.RemoveEmptyEntries);
+
             builder.Services.AddCors(options =>
             {
                 options.AddPolicy("AllowClient", policy =>
-                policy.WithOrigins(builder.Configuration["Cors:Origin"]!)
+                policy.WithOrigins(corsOrigins)
                     .AllowAnyMethod()
                     .AllowAnyHeader());
             });
