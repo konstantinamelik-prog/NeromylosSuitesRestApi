@@ -25,7 +25,7 @@ services:
       Jwt__Issuer: "${JWT_ISSUER:-https://localhost:8081}"
       Jwt__Audience: "${JWT_AUDIENCE:-https://localhost:8081}"
       Jwt__Secret: "${JWT_SECRET}"
-      Cors__Origin: "${CORS_ORIGIN:-http://localhost:3000}"
+      Cors__Origin: "${CORS_ORIGINS:-http://localhost:3000}"
       AllowedHosts: "${ALLOWED_HOSTS:-*}"
       ASPNETCORE_ENVIRONMENT: "${ASPNETCORE_ENVIRONMENT:-Production}"
       ConnectionStrings__DevConnection: "Server=${DB_HOST};Database=${DB_NAME};User=${DB_USER};Password=${DB_USER_PASSWORD};MultipleActiveResultSets=true;TrustServerCertificate=True"
