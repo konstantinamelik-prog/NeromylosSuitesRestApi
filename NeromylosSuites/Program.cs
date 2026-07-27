@@ -125,6 +125,8 @@ namespace NeromylosSuites
 
             app.UseHttpsRedirection();
 
+            app.UseStaticFiles();
+
             app.UseCors("AllowClient");
             app.UseAuthentication();
             app.UseAuthorization();
