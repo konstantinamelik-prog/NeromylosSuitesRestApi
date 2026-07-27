@@ -1,8 +1,7 @@
 ﻿namespace NeromylosSuites.Models
 {
-    public class Room
+    public class Room : BaseEntity
     {
-        public int Id { get; set; }
         public int RoomNumber { get; set; }
         public string Name { get; set; } = null!;
         public string Description { get; set; } = null!;

@@ -1,9 +1,10 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using NeromylosSuites.Data;
+using NeromylosSuites.Models;
 
 namespace NeromylosSuites.Repositories
 {
-    public class BaseRepository<T> : IBaseRepository<T> where T : class
+    public class BaseRepository<T> : IBaseRepository<T> where T : BaseEntity
     {
         protected readonly NeromylosSuitesMvcContext _context;
         protected readonly DbSet<T> _dbSet;
@@ -29,14 +30,19 @@ namespace NeromylosSuites.Repositories
         {
             T? existingEntity = await _dbSet.FindAsync(id);
             if (existingEntity is null) return false;
-            _dbSet.Remove(existingEntity);
+            existingEntity.IsDeleted = true;
+            existingEntity.DeletedAt = DateTime.UtcNow;
+            _context.Entry(existingEntity).State = EntityState.Modified;
             return true;
         }
 
-        public virtual async Task<T?> GetByIdAsync(int id) => await _dbSet.FindAsync(id);
+        public virtual async Task<T?> GetByIdAsync(int id) =>
+            await _dbSet.FirstOrDefaultAsync(e => e.Id == id && !e.IsDeleted);
 
-        public virtual async Task<IEnumerable<T>> GetAllAsync() => await _dbSet.ToListAsync();
+        public virtual async Task<IEnumerable<T>> GetAllAsync() =>
+            await _dbSet.Where(e => !e.IsDeleted).ToListAsync();
 
-        public virtual async Task<int> GetCountAsync() => await _dbSet.CountAsync();
+        public virtual async Task<int> GetCountAsync() =>
+            await _dbSet.CountAsync(e => !e.IsDeleted);
     }
 }
