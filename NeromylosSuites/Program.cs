@@ -67,7 +67,7 @@ namespace NeromylosSuites
                 };
             });
 
-            var corsOrigins = builder.Configuration["Cors:Origin"]!
+            var corsOrigins = (builder.Configuration["Cors:Origin"] ?? "http://localhost:3000")
                 .Split(',', StringSplitOptions.RemoveEmptyEntries);
 
             builder.Services.AddCors(options =>
