@@ -27,6 +27,16 @@ namespace NeromylosSuites.Services
 
         public async Task<BookingReadOnlyDTO> CreateBookingAsync(CreateBookingDTO request)
         {
+            if (request.CheckOut <= request.CheckIn)
+            {
+                throw new ArgumentException("Check-out date must be after check-in date.");
+            }
+
+            if (request.CheckIn < DateTime.UtcNow.Date)
+            {
+                throw new ArgumentException("Check-in date cannot be in the past.");
+            }
+
             var booking = _mapper.Map<Booking>(request);
 
             var existingUser = await _unitOfWork.UserRepository.GetUserByEmailAsync(request.Email!);

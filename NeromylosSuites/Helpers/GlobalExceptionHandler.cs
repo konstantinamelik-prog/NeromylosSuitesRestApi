@@ -71,6 +71,7 @@ namespace NeromylosSuites.Helpers
 
         private static (int StatusCode, string Title, bool IsExpected) MapException(Exception ex) => ex switch
         {
+            ArgumentException => (StatusCodes.Status400BadRequest, "Bad Request", true),
             EntityAlreadyExistsException => (StatusCodes.Status409Conflict, "Resource already exists", true),
             EntityNotAuthorizedException => (StatusCodes.Status401Unauthorized, "Unauthorized", true),
             EntityForbiddenException => (StatusCodes.Status403Forbidden, "Forbidden", true),
