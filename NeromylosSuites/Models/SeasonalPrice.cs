@@ -1,8 +1,7 @@
 ﻿namespace NeromylosSuites.Models
 {
-    public class SeasonalPrice
+    public class SeasonalPrice : BaseEntity
     {
-        public int Id { get; set; }
         public string SeasonName { get; set; } = null!;
         public DateTime DateFrom { get; set; }
         public DateTime DateTo { get; set; }
