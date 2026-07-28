@@ -23,8 +23,8 @@ namespace NeromylosSuites.Controllers
         /// <summary>
         /// Gets the available rooms for a specific date range.
         /// </summary>
-        /// <param name="checkIn">The date of check-in</param>
-        /// <param name="checkOut">The date of check-out to search for</param>
+        /// <param name="checkIn">The date of check-in (example, 2026-07-28)</param>
+        /// <param name="checkOut">The date of check-out (example, 2026-07-28) to search for</param>
         /// <returns>the list of rooms.</returns>
         /// <response code="200">Returns the requested availability.</response>
         /// <response code="400">If the request body is invalid.</response>

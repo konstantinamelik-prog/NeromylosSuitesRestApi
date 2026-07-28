@@ -13,19 +13,30 @@ namespace NeromylosSuites.Services
         private readonly IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
         private readonly ILogger<RoomService> _logger;
+        private readonly IPriceCalculationService _priceCalculationService;
 
-        public RoomService(IUnitOfWork unitOfWork, IMapper mapper, ILogger<RoomService> logger)
+        public RoomService(IUnitOfWork unitOfWork, IMapper mapper, 
+            ILogger<RoomService> logger, IPriceCalculationService priceCalculationService)
         {
             _unitOfWork = unitOfWork;
             _mapper = mapper;
             _logger = logger;
+            _priceCalculationService = priceCalculationService;
         }
 
         public async Task<List<RoomReadOnlyDTO>> GetAvailableRoomsByDateRangeAsync(DateTime checkIn, DateTime checkOut)
         {
             var availableRooms = await _unitOfWork.RoomRepository.GetAvailableRoomsByDateRangeAsync(checkIn, checkOut);
 
-            return _mapper.Map<List<RoomReadOnlyDTO>>(availableRooms);
+            var result = new List<RoomReadOnlyDTO>();
+            foreach (var room in availableRooms)
+            {
+                var dto = _mapper.Map<RoomReadOnlyDTO>(room);
+                dto.TotalPrice = await _priceCalculationService.CalculateRoomPriceAsync(room.Id, checkIn, checkOut);
+                result.Add(dto);
+            }
+
+            return result;
         }
 
         public async Task<List<BookingReadOnlyDTO>> GetRoomBookingsAsync(string roomName)

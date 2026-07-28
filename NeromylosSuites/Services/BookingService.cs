@@ -15,14 +15,16 @@ namespace NeromylosSuites.Services
         private readonly IVisitorService _visitorService;
         private readonly IMapper _mapper;
         private readonly ILogger<BookingService> _logger;
+        private readonly IPriceCalculationService _priceCalculationService;
 
         public BookingService(IUnitOfWork unitOfWork, IMapper mapper, 
-            ILogger<BookingService> logger, IVisitorService visitorService)
+            ILogger<BookingService> logger, IVisitorService visitorService, IPriceCalculationService priceCalculationService)
         {
             _unitOfWork = unitOfWork;
             _visitorService = visitorService;
             _mapper = mapper;
             _logger = logger;
+            _priceCalculationService = priceCalculationService;
         }
 
         public async Task<BookingReadOnlyDTO> CreateBookingAsync(CreateBookingDTO request)
@@ -78,24 +80,10 @@ namespace NeromylosSuites.Services
             }
 
             decimal totalPrice = 0;
-
             foreach (var room in requestedRooms)
             {
-                var currentDate = request.CheckIn!.Value;
-                while (currentDate < request.CheckOut!.Value)
-                {
-                    var seasonalPrice = await _unitOfWork.SeasonalPricesRepository
-                        .GetPriceForRoomAndDateAsync(room.Id, currentDate);
-
-                    if (seasonalPrice == null)
-                    {
-                        throw new EntityNotFoundException("SeasonalPrice",
-                            $"No price found for room '{room.Name}' on {currentDate:dd/MM/yyyy}");
-                    }
-
-                    totalPrice += seasonalPrice.Price;
-                    currentDate = currentDate.AddDays(1);
-                }
+                totalPrice += await _priceCalculationService.CalculateRoomPriceAsync(
+                    room.Id, request.CheckIn!.Value, request.CheckOut!.Value);
             }
 
             booking.TotalPrice = totalPrice;

@@ -39,6 +39,7 @@ namespace NeromylosSuites
             builder.Services.AddScoped<IRoomService, RoomService>();
             builder.Services.AddScoped<IApplicationService, ApplicationService>();
             builder.Services.AddSingleton<IEncryptionUtil, EncryptionUtil>();
+            builder.Services.AddScoped<IPriceCalculationService, PriceCalculationService>();
 
             builder.Services.AddRepositories();
 
