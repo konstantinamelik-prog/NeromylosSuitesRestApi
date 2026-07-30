@@ -34,7 +34,8 @@ namespace NeromylosSuites.Repositories
 
             bookings = await _context.Users
                 .Where(u => u.Id == userId)
-                .SelectMany(b => b.Bookings)
+                .SelectMany(u => u.Bookings)
+                .Include(b => b.Rooms)
                 .ToListAsync();
 
             return bookings;
@@ -49,26 +50,6 @@ namespace NeromylosSuites.Repositories
                 .ToListAsync();
 
             return members;
-        }
-
-        public async Task<PaginatedResult<User>> GetPaginatedUsersMembersAsync(int pageNumber, int pageSize)
-        {
-            int skip = (pageNumber - 1) * pageSize;
-
-            var usersWithRoleMember = await _context.Users
-                .Include(u => u.Member)
-                .Include(u => u.Role)
-                .Where(u => u.Member != null)
-                .OrderBy(u => u.Id)
-                .Skip(skip)
-                .Take(pageSize)
-                .ToListAsync();
-
-            int totalRecords = await _context.Users
-                .Where(u => u.Member != null)
-                .CountAsync();
-
-            return new PaginatedResult<User>(usersWithRoleMember, totalRecords, pageNumber, pageSize);
         }
 
         public async Task<PaginatedResult<User>> GetPaginatedUsersMembersFilteredAsync(int pageNumber, int pageSize, List<Expression<Func<User, bool>>> predicates)

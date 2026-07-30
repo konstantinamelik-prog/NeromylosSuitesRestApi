@@ -111,53 +111,18 @@ namespace NeromylosSuites.Services
             return _mapper.Map<List<MemberReadOnlyDTO>>(members);
         }
 
-        public async Task<PaginatedResult<UserReadOnlyDTO>> GetPaginatedMembersAsync(int pageNumber, int pageSize)
-        {
-            var result = await _unitOfWork.MemberRepository.GetPaginatedUsersMembersAsync(pageNumber, pageSize);
-
-            var dtoResult = new PaginatedResult<UserReadOnlyDTO>()
-            {
-                Data = result.Data.Select(u => new UserReadOnlyDTO
-                {
-                    Id = u.Id,
-                    Username = u.Username,
-                    Firstname = u.Firstname,
-                    Lastname = u.Lastname,
-                    Email = u.Email,
-                    UserRole = u.Role.Name
-                }).ToList(),
-                TotalRecords = result.TotalRecords,
-                PageNumber = result.PageNumber,
-                PageSize = result.PageSize
-            };
-            _logger.LogInformation("Retrieved {Count} users-members", dtoResult.Data.Count);
-            return dtoResult;
-        }
-
         public async Task<PaginatedResult<UserReadOnlyDTO>> GetPaginatedMembersFilteredAsync(
-            int pageNumber, int pageSize, UserFiltersDTO userFiltersDTO)
+            int pageNumber, int pageSize, MemberFiltersDTO memberFiltersDTO)
         {
             List<Expression<Func<User, bool>>> predicates = [];
 
-            if (!string.IsNullOrEmpty(userFiltersDTO.Username))
+            if (!string.IsNullOrEmpty(memberFiltersDTO.CountryCode))
             {
-                predicates.Add(u => u.Username == userFiltersDTO.Username);
-            }
-            if (!string.IsNullOrEmpty(userFiltersDTO.Email))
-            {
-                predicates.Add(u => u.Email == userFiltersDTO.Email);
-            }
-            if (!string.IsNullOrEmpty(userFiltersDTO.Lastname))
-            {
-                predicates.Add(u => u.Lastname == userFiltersDTO.Lastname);
-            }
-            if (!string.IsNullOrEmpty(userFiltersDTO.UserRole))
-            {
-                predicates.Add(u => u.Role.Name == userFiltersDTO.UserRole);
+                predicates.Add(u => u.Member != null && u.Member.CountryCode == memberFiltersDTO.CountryCode);
             }
 
-            var result = await _unitOfWork.UserRepository.GetPaginatedUsersAsync(pageNumber, pageSize,
-                predicates);
+            var result = await _unitOfWork.MemberRepository
+                .GetPaginatedUsersMembersFilteredAsync(pageNumber, pageSize, predicates);
 
             var dtoResult = new PaginatedResult<UserReadOnlyDTO>()
             {
