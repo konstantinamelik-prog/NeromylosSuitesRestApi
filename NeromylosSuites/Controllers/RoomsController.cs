@@ -3,9 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using NeromylosSuites.Core;
 using NeromylosSuites.Core.Filters;
 using NeromylosSuites.DTO;
-using NeromylosSuites.Exceptions;
 using NeromylosSuites.Services;
-using System.Security.Claims;
 
 namespace NeromylosSuites.Controllers
 {
