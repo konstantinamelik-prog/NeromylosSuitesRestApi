@@ -119,30 +119,6 @@ namespace NeromylosSuites.Controllers
         }
 
         /// <summary>
-        /// Gets a paginated list of visitors.
-        /// </summary>
-        /// <param name="pageNumber">The page number (1-based). Default is 1.</param>
-        /// <param name="pageSize">The number of items per page. Default is 10.</param>
-        /// <returns>A paginated list of visitors.</returns>
-        /// <response code="200">Returns the paginated visitor list.</response>
-        /// <response code="401">If the request is not authenticated.</response>
-        /// <response code="403">If the user lacks permission to list visitors.</response>
-        [HttpGet]
-        [Authorize(Roles = "ADMIN,RECEPTIONIST")]
-        [ProducesResponseType(typeof(PaginatedResult<VisitorReadOnlyDTO>), StatusCodes.Status200OK)]
-        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
-        [ProducesResponseType(StatusCodes.Status403Forbidden)]
-        public async Task<ActionResult<PaginatedResult<VisitorReadOnlyDTO>>> GetPaginatedVisitors(
-            [FromQuery] int pageNumber = 1,
-            [FromQuery] int pageSize = 10)
-        {
-            var result = await _applicationService.VisitorService
-                .GetPaginatedVisitorsAsync(pageNumber, pageSize);
-
-            return Ok(result);
-        }
-
-        /// <summary>
         /// Gets a paginated list of visitors with optional filtering.
         /// </summary>
         /// <param name="pageNumber">The page number (1-based). Default is 1.</param>
@@ -152,7 +128,7 @@ namespace NeromylosSuites.Controllers
         /// <response code="200">Returns the paginated visitor list.</response>
         /// <response code="401">If the request is not authenticated.</response>
         /// <response code="403">If the user lacks permission to list visitors.</response>
-        [HttpGet("filtered")]
+        [HttpGet]
         [Authorize(Roles = "ADMIN,RECEPTIONIST")]
         [ProducesResponseType(typeof(PaginatedResult<VisitorReadOnlyDTO>), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]

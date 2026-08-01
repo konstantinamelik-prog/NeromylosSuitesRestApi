@@ -41,21 +41,6 @@ namespace NeromylosSuites.Repositories
             return visitors;
         }
 
-        public async Task<PaginatedResult<Visitor>> GetPaginatedVisitorsAsync(int pageNumber, int pageSize)
-        {
-            int skip = (pageNumber - 1) * pageSize;
-
-            int totalRecords = await _context.Visitors.CountAsync();
-
-            var visitors = await _context.Visitors
-                .OrderBy(v => v.Id)
-                .Skip(skip)
-                .Take(pageSize)
-                .ToListAsync();
-
-            return new PaginatedResult<Visitor>(visitors, totalRecords, pageNumber, pageSize);
-        }
-
         public async Task<PaginatedResult<Visitor>> GetPaginatedVisitorsFilteredAsync(int pageNumber, int pageSize, List<Expression<Func<Visitor, bool>>> predicates)
         {
             IQueryable<Visitor> query = _context.Visitors;

@@ -44,22 +44,6 @@ namespace NeromylosSuites.Repositories
             return bookings;
         }
 
-        public async Task<PaginatedResult<Booking>> GetPaginatedBookingsAsync(int pageNumber, int pageSize)
-        {
-            int skip = (pageNumber - 1) * pageSize;
-
-            int totalRecords = await _context.Bookings.CountAsync();
-
-            var bookings = await _context.Bookings
-                .Include(b => b.Rooms)
-                .OrderBy(b => b.Id)
-                .Skip(skip)
-                .Take(pageSize)
-                .ToListAsync();
-
-            return new PaginatedResult<Booking>(bookings, totalRecords, pageNumber, pageSize);
-        }
-
         public async Task<PaginatedResult<Booking>> GetPaginatedBookingsFilteredAsync(int pageNumber, int pageSize, List<Expression<Func<Booking, bool>>> predicates)
         {
             IQueryable<Booking> query = _context.Bookings;

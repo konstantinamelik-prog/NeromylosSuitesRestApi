@@ -91,22 +91,6 @@ namespace NeromylosSuites.Services
             return _mapper.Map<List<VisitorReadOnlyDTO>>(visitors);
         }
 
-        public async Task<PaginatedResult<VisitorReadOnlyDTO>> GetPaginatedVisitorsAsync(int pageNumber, int pageSize)
-        {
-            var result = await _unitOfWork.VisitorRepository.GetPaginatedVisitorsAsync(pageNumber, pageSize);
-
-            var dtoResult = new PaginatedResult<VisitorReadOnlyDTO>()
-            {
-                Data = _mapper.Map<List<VisitorReadOnlyDTO>>(result.Data),
-                TotalRecords = result.TotalRecords,
-                PageNumber = result.PageNumber,
-                PageSize = result.PageSize
-            };
-
-            _logger.LogInformation("Retrieved {Count} visitors", dtoResult.Data.Count);
-            return dtoResult;
-        }
-
         public async Task<PaginatedResult<VisitorReadOnlyDTO>> GetPaginatedVisitorsFilteredAsync(int pageNumber, int pageSize, VisitorFiltersDTO visitorFiltersDTO)
         {
             {

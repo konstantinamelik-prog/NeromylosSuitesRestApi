@@ -105,7 +105,7 @@ namespace NeromylosSuites.Services
                 predicates.Add(u => u.Role.Name == userFiltersDTO.UserRole);
             }
 
-            var result = await _unitOfWork.UserRepository.GetPaginatedUsersAsync(pageNumber, pageSize, predicates);
+            var result = await _unitOfWork.UserRepository.GetPaginatedUsersFilteredAsync(pageNumber, pageSize, predicates);
 
             var dtoResult = new PaginatedResult<UserReadOnlyDTO>()
             {

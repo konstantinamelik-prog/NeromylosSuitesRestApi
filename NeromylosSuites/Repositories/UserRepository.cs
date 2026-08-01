@@ -33,7 +33,7 @@ namespace NeromylosSuites.Repositories
             .Include(u => u.Member)
             .FirstOrDefaultAsync(u => u.Id == id);
 
-        public async Task<PaginatedResult<User>> GetPaginatedUsersAsync(int pageNumber, int pageSize, List<Expression<Func<User, bool>>> predicates)
+        public async Task<PaginatedResult<User>> GetPaginatedUsersFilteredAsync(int pageNumber, int pageSize, List<Expression<Func<User, bool>>> predicates)
         {
             int totalRecords;
             IQueryable<User> query = _context.Users;

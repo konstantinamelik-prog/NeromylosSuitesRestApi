@@ -10,6 +10,6 @@ namespace NeromylosSuites.Repositories
         Task<User?> GetUserByUsernameAsync(string username);
         Task<User?> GetUserByEmailAsync(string email);
         Task<User?> GetUserWithMemberByIdAsync(int id);
-        Task<PaginatedResult<User>> GetPaginatedUsersAsync(int pageNumber, int pageSize, List<Expression<Func<User, bool>>> predicates);
+        Task<PaginatedResult<User>> GetPaginatedUsersFilteredAsync(int pageNumber, int pageSize, List<Expression<Func<User, bool>>> predicates);
     }
 }

@@ -11,7 +11,6 @@ namespace NeromylosSuites.Services
         Task<VisitorReadOnlyDTO> GetVisitorByIdAsync(int id);
         Task<List<BookingReadOnlyDTO>> GetVisitorBookingsAsync(int visitorId);
         Task<List<VisitorReadOnlyDTO>> GetVisitorsByCountryCodeAsync(string countryCode);
-        Task<PaginatedResult<VisitorReadOnlyDTO>> GetPaginatedVisitorsAsync(int pageNumber, int pageSize);
         Task<PaginatedResult<VisitorReadOnlyDTO>> GetPaginatedVisitorsFilteredAsync(
             int pageNumber, int pageSize, VisitorFiltersDTO visitorFiltersDTO);
     }
