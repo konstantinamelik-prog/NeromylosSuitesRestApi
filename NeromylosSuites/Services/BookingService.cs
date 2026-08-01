@@ -88,13 +88,29 @@ namespace NeromylosSuites.Services
 
             booking.TotalPrice = totalPrice;
             booking.Rooms = requestedRooms;
-            booking.Status = "PENDING";
+            booking.Status = BookingStatuses.Pending;
 
             await _unitOfWork.BookingRepository.AddAsync(booking);
 
             await _unitOfWork.SaveAsync();
             _logger.LogInformation("Booking request with id: {BookingId} has been successfully registered.", booking.Id);
             return _mapper.Map<BookingReadOnlyDTO>(booking);
+        }
+
+        public async Task DeleteBookingAsync(int bookingId)
+        {
+            var booking = await _unitOfWork.BookingRepository.GetBookingByIdAsync(bookingId);
+            if (booking == null)
+            {
+                throw new EntityNotFoundException("Booking", $"Booking with id: {bookingId} not found");
+            }
+
+            booking.Status = BookingStatuses.Deleted;
+            await _unitOfWork.BookingRepository.UpdateAsync(booking);
+            await _unitOfWork.BookingRepository.DeleteAsync(bookingId);
+
+            await _unitOfWork.SaveAsync();
+            _logger.LogInformation("Booking with id {BookingId} deleted successfully", bookingId);
         }
 
         public async Task<BookingReadOnlyDTO> GetBookingByIdAsync(int bookingId)

@@ -41,6 +41,26 @@ namespace NeromylosSuites.Controllers
         }
 
         /// <summary>
+        /// Deletes a booking (soft delete).
+        /// </summary>
+        /// <param name="bookingId">The booking ID to delete.</param>
+        /// <response code="204">Booking deleted successfully.</response>
+        /// <response code="401">If the request is not authenticated.</response>
+        /// <response code="403">If the user is not an admin.</response>
+        /// <response code="404">If no booking exists with the given id.</response>
+        [HttpDelete("{bookingId:int}")]
+        [Authorize(Roles = "ADMIN")]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public async Task<IActionResult> DeleteBooking(int bookingId)
+        {
+            await _applicationService.BookingService.DeleteBookingAsync(bookingId);
+            return NoContent();
+        }
+
+        /// <summary>
         /// Get a booking by their id.
         /// </summary>
         /// <param name="bookingId">The bookingId to search for</param>

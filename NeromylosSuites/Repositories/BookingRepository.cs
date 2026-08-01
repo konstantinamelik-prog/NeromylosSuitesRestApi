@@ -15,6 +15,7 @@ namespace NeromylosSuites.Repositories
         public async Task<Booking?> GetBookingByIdAsync(int bookingId)
         {
             return await _context.Bookings
+                .Where(b => !b.IsDeleted)
                 .Include(b => b.User)
                 .Include(b => b.Visitor)
                 .Include(b => b.Rooms)
@@ -24,10 +25,10 @@ namespace NeromylosSuites.Repositories
         public async Task<List<Booking>> GetBookingsByUserIdAsync(int userId)
         {
             List<Booking> bookings = await _context.Bookings
+                .Where(b => !b.IsDeleted && b.UserId == userId)
                 .Include(b => b.User)
                 .Include(b => b.Visitor)
                 .Include(b => b.Rooms)
-                .Where(b => b.UserId == userId)
                 .ToListAsync();
 
             return bookings;
@@ -36,9 +37,9 @@ namespace NeromylosSuites.Repositories
         public async Task<List<Booking>> GetBookingsByVisitorIdAsync(int visitorId)
         {
             List<Booking> bookings = await _context.Bookings
+                .Where(b => !b.IsDeleted && b.VisitorId == visitorId)
                 .Include(b => b.Visitor)
                 .Include(b => b.Rooms)
-                .Where(b => b.VisitorId == visitorId)
                 .ToListAsync();
 
             return bookings;
@@ -46,11 +47,11 @@ namespace NeromylosSuites.Repositories
 
         public async Task<PaginatedResult<Booking>> GetPaginatedBookingsFilteredAsync(int pageNumber, int pageSize, List<Expression<Func<Booking, bool>>> predicates)
         {
-            IQueryable<Booking> query = _context.Bookings;
+            IQueryable<Booking> query = _context.Bookings.Where(b => !b.IsDeleted);
 
             if (predicates != null && predicates.Count > 0)
             {
-                foreach(var predicate in predicates)
+                foreach (var predicate in predicates)
                 {
                     query = query.Where(predicate);
                 }

@@ -30,8 +30,9 @@ namespace NeromylosSuites.Repositories
         public async Task<List<Room>> GetAvailableRoomsByDateRangeAsync(DateTime checkIn, DateTime checkOut)
         {
             var bookedRoomIds = await _context.Bookings
-                .Where(b => b.CheckIn < checkOut && b.CheckOut > checkIn
-                            && b.Status != "CANCELLED")
+                .Where(b => !b.IsDeleted
+                            && b.CheckIn < checkOut && b.CheckOut > checkIn
+                            && (b.Status == BookingStatuses.Pending || b.Status == BookingStatuses.Confirmed))
                 .SelectMany(b => b.Rooms)
                 .Select(r => r.Id)
                 .ToListAsync();
