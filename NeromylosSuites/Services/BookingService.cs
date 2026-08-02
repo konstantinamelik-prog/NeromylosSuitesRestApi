@@ -27,6 +27,15 @@ namespace NeromylosSuites.Services
             _priceCalculationService = priceCalculationService;
         }
 
+        private static readonly HashSet<string> ValidStatuses = new()
+        {
+            BookingStatuses.Pending,
+            BookingStatuses.Confirmed,
+            BookingStatuses.Cancelled,
+            BookingStatuses.Completed
+            // BookingStatuses.Deleted μόνο μέσω DELETE endpoint
+        };
+
         public async Task<BookingReadOnlyDTO> CreateBookingAsync(CreateBookingDTO request)
         {
             if (request.CheckOut <= request.CheckIn)
@@ -111,6 +120,28 @@ namespace NeromylosSuites.Services
 
             await _unitOfWork.SaveAsync();
             _logger.LogInformation("Booking with id {BookingId} deleted successfully", bookingId);
+        }
+
+        public async Task<BookingReadOnlyDTO> UpdateBookingStatusAsync(int bookingId, UpdateBookingStatusDTO request)
+        {
+            if (string.IsNullOrEmpty(request.Status) || !ValidStatuses.Contains(request.Status))
+            {
+                throw new ArgumentException(
+                    $"Invalid status '{request.Status}'. Valid values are: {string.Join(", ", ValidStatuses)}");
+            }
+
+            var booking = await _unitOfWork.BookingRepository.GetBookingByIdAsync(bookingId);
+            if (booking == null)
+            {
+                throw new EntityNotFoundException("Booking", $"Booking with id: {bookingId} not found");
+            }
+
+            booking.Status = request.Status;
+            await _unitOfWork.BookingRepository.UpdateAsync(booking);
+            await _unitOfWork.SaveAsync();
+
+            _logger.LogInformation("Booking with id {BookingId} status updated to {Status}", bookingId, request.Status);
+            return _mapper.Map<BookingReadOnlyDTO>(booking);
         }
 
         public async Task<BookingReadOnlyDTO> GetBookingByIdAsync(int bookingId)

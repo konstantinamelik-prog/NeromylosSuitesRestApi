@@ -8,6 +8,7 @@ namespace NeromylosSuites.Services
     {
         Task<BookingReadOnlyDTO> CreateBookingAsync(CreateBookingDTO request);
         Task DeleteBookingAsync(int bookingId);
+        Task<BookingReadOnlyDTO> UpdateBookingStatusAsync(int bookingId, UpdateBookingStatusDTO request);
         Task<BookingReadOnlyDTO> GetBookingByIdAsync(int bookingId);
         Task<List<BookingReadOnlyDTO>> GetBookingsByUserIdAsync(int userId);
         Task<List<BookingReadOnlyDTO>> GetBookingsByVisitorIdAsync(int visitorId);

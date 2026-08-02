@@ -61,6 +61,30 @@ namespace NeromylosSuites.Controllers
         }
 
         /// <summary>
+        /// Updates the status of a booking.
+        /// </summary>
+        /// <param name="bookingId">The booking ID.</param>
+        /// <param name="request">The new status.</param>
+        /// <response code="200">Returns the updated booking.</response>
+        /// <response code="400">If the status value is invalid.</response>
+        /// <response code="401">If the request is not authenticated.</response>
+        /// <response code="403">If the user lacks permission.</response>
+        /// <response code="404">If no booking exists with the given id.</response>
+        [HttpPatch("{bookingId:int}/status")]
+        [Authorize(Roles = "ADMIN,RECEPTIONIST")]
+        [ProducesResponseType(typeof(BookingReadOnlyDTO), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public async Task<ActionResult<BookingReadOnlyDTO>> UpdateBookingStatus(
+            int bookingId, [FromBody] UpdateBookingStatusDTO request)
+        {
+            var booking = await _applicationService.BookingService.UpdateBookingStatusAsync(bookingId, request);
+            return Ok(booking);
+        }
+
+        /// <summary>
         /// Get a booking by their id.
         /// </summary>
         /// <param name="bookingId">The bookingId to search for</param>
