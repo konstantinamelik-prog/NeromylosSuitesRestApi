@@ -44,6 +44,27 @@ namespace NeromylosSuites.Services
             return _mapper.Map<VisitorReadOnlyDTO>(visitor);
         }
 
+        public async Task DeleteVisitorAsync(int visitorId)
+        {
+            var visitor = await _unitOfWork.VisitorRepository.GetByIdAsync(visitorId);
+            if (visitor == null)
+            {
+                throw new EntityNotFoundException("Visitor", $"Visitor with id: {visitorId} not found");
+            }
+
+            var hasActiveBookings = await _unitOfWork.BookingRepository.HasActiveBookingsForVisitorAsync(visitorId);
+            if (hasActiveBookings)
+            {
+                throw new EntityHasActiveDependenciesException("Visitor",
+                    "Cannot delete visitor with active or completed bookings.");
+            }
+
+            await _unitOfWork.VisitorRepository.DeleteAsync(visitorId);
+            await _unitOfWork.SaveAsync();
+
+            _logger.LogInformation("Visitor with id {VisitorId} deleted successfully", visitorId);
+        }
+
         public async Task<VisitorReadOnlyDTO> GetVisitorByPhoneNumberAsync(string phoneNumber)
         {
             var visitor = await _unitOfWork.VisitorRepository.GetVisitorByPhoneNumberAsync(phoneNumber);

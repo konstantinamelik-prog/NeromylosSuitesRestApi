@@ -43,6 +43,28 @@ namespace NeromylosSuites.Controllers
         }
 
         /// <summary>
+        /// Deletes a user account (soft delete, cascades to member profile if present).
+        /// </summary>
+        /// <param name="id">The user ID.</param>
+        /// <response code="204">User deleted successfully.</response>
+        /// <response code="401">If the request is not authenticated.</response>
+        /// <response code="403">If the user is not an admin.</response>
+        /// <response code="404">If no user exists with the given id.</response>
+        /// <response code="409">If the user has active or completed bookings.</response>
+        [HttpDelete("{id:int}")]
+        [Authorize(Roles = "ADMIN")]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status409Conflict)]
+        public async Task<IActionResult> DeleteUser(int id)
+        {
+            await _applicationService.UserService.DeleteUserAsync(id);
+            return NoContent();
+        }
+
+        /// <summary>
         /// Gets a user by their username.
         /// </summary>
         /// <param name = "username" > The username to search for.</param>

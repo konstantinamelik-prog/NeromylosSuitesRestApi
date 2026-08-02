@@ -50,6 +50,33 @@ namespace NeromylosSuites.Services
             };
         }
 
+        public async Task DeleteUserAsync(int userId)
+        {
+            var user = await _unitOfWork.UserRepository.GetUserWithMemberByIdAsync(userId);
+            if (user == null)
+            {
+                throw new EntityNotFoundException("User", $"User with id: {userId} not found");
+            }
+
+            var hasActiveBookings = await _unitOfWork.BookingRepository.HasActiveBookingsForUserAsync(userId);
+            if (hasActiveBookings)
+            {
+                throw new EntityHasActiveDependenciesException("User",
+                    "Cannot delete user with active or completed bookings.");
+            }
+
+            if (user.Member != null)
+            {
+                await _unitOfWork.MemberRepository.DeleteAsync(user.Member.Id);
+            }
+
+            await _unitOfWork.UserRepository.DeleteAsync(userId);
+            await _unitOfWork.SaveAsync();
+
+            _logger.LogInformation("User with id {UserId} deleted successfully (cascade: member={HasMember})",
+                userId, user.Member != null);
+        }
+
         public async Task<UserReadOnlyDTO> GetUserByUsernameAsync(string username)
         {
             var user = await _unitOfWork.UserRepository.GetUserByUsernameAsync(username);

@@ -7,6 +7,7 @@ namespace NeromylosSuites.Services
     public interface IVisitorService
     {
         Task<VisitorReadOnlyDTO> CreateVisitorAsync(CreateVisitorDTO createVisitorDTO);
+        Task DeleteVisitorAsync(int visitorId);
         Task<VisitorReadOnlyDTO> GetVisitorByPhoneNumberAsync(string phoneNumber);
         Task<VisitorReadOnlyDTO> GetVisitorByIdAsync(int id);
         Task<List<BookingReadOnlyDTO>> GetVisitorBookingsAsync(int visitorId);

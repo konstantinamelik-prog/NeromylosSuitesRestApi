@@ -7,6 +7,7 @@ namespace NeromylosSuites.Services
     public interface IUserService
     {
         Task<LoginResultDTO> LoginAsync(UserLoginDTO credentials);
+        Task DeleteUserAsync(int userId);
         Task<UserReadOnlyDTO> GetUserByUsernameAsync(string username);
         Task<UserReadOnlyDTO> GetUserByIdAsync(int id);
         Task<UserReadOnlyDTO> GetUserByEmailAsync(string email);

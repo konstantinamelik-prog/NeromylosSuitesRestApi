@@ -39,6 +39,28 @@ namespace NeromylosSuites.Controllers
         }
 
         /// <summary>
+        /// Deletes a visitor (soft delete).
+        /// </summary>
+        /// <param name="visitorId">The visitor ID.</param>
+        /// <response code="204">Visitor deleted successfully.</response>
+        /// <response code="401">If the request is not authenticated.</response>
+        /// <response code="403">If the user is not an admin.</response>
+        /// <response code="404">If no visitor exists with the given id.</response>
+        /// <response code="409">If the visitor has active or completed bookings.</response>
+        [HttpDelete("{visitorId:int}")]
+        [Authorize(Roles = "ADMIN")]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status409Conflict)]
+        public async Task<IActionResult> DeleteVisitor(int visitorId)
+        {
+            await _applicationService.VisitorService.DeleteVisitorAsync(visitorId);
+            return NoContent();
+        }
+
+        /// <summary>
         /// Gets a visitor by their phoneNumber.
         /// </summary>
         /// <param name="phoneNumber">The phoneNumber to search for.</param>
