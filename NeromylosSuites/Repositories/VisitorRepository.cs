@@ -13,10 +13,14 @@ namespace NeromylosSuites.Repositories
         }
 
         public async Task<Visitor?> GetVisitorByEmailAsync(string email) => 
-            await _context.Visitors.FirstOrDefaultAsync(v => v.Email == email);
+            await _context.Visitors
+            .Where(v => !v.IsDeleted && v.Email == email)
+            .FirstOrDefaultAsync();
 
         public async Task<Visitor?> GetVisitorByPhoneNumberAsync(string phoneNumber) =>
-            await _context.Visitors.FirstOrDefaultAsync(v => v.PhoneNumber == phoneNumber);
+            await _context.Visitors
+            .Where(v => !v.IsDeleted && v.PhoneNumber == phoneNumber)
+            .FirstOrDefaultAsync();
 
         public async Task<List<Booking>> GetVisitorBookingsAsync(int visitorId)
         {
@@ -35,7 +39,7 @@ namespace NeromylosSuites.Repositories
             List<Visitor> visitors;
 
             visitors = await _context.Visitors
-                .Where(v => v.CountryCode == countryCode)
+                .Where(v => !v.IsDeleted && v.CountryCode == countryCode)
                 .ToListAsync();
 
             return visitors;
@@ -43,7 +47,7 @@ namespace NeromylosSuites.Repositories
 
         public async Task<PaginatedResult<Visitor>> GetPaginatedVisitorsFilteredAsync(int pageNumber, int pageSize, List<Expression<Func<Visitor, bool>>> predicates)
         {
-            IQueryable<Visitor> query = _context.Visitors;
+            IQueryable<Visitor> query = _context.Visitors.Where(v => !v.IsDeleted);
 
             if (predicates != null && predicates.Count > 0)
             {

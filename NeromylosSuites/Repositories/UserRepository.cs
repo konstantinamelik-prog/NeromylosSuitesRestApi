@@ -14,29 +14,33 @@ namespace NeromylosSuites.Repositories
 
         public async Task<User?> GetUserByIdAsync(int id) =>
             await _context.Users
+                .Where(u => !u.IsDeleted)
                 .Include(u => u.Role)
                 .FirstOrDefaultAsync(u => u.Id == id);
 
         public async Task<User?> GetUserByUsernameAsync(string username) => 
             await _context.Users
-            .Include(u => u.Role)
-            .FirstOrDefaultAsync(u => u.Username == username || u.Email == username);
+                .Where(u => !u.IsDeleted)
+                .Include(u => u.Role)
+                .FirstOrDefaultAsync(u => u.Username == username || u.Email == username);
 
         public async Task<User?> GetUserByEmailAsync(string email) =>
             await _context.Users
-            .Include(u => u.Role)
-            .SingleOrDefaultAsync(e => e.Email == email);
+                .Where(u => !u.IsDeleted)
+                .Include(u => u.Role)
+                .SingleOrDefaultAsync(e => e.Email == email);
 
         public async Task<User?> GetUserWithMemberByIdAsync(int id) =>
             await _context.Users
-            .Include(u => u.Role)
-            .Include(u => u.Member)
-            .FirstOrDefaultAsync(u => u.Id == id);
+                .Where(u => !u.IsDeleted)
+                .Include(u => u.Role)
+                .Include(u => u.Member)
+                .FirstOrDefaultAsync(u => u.Id == id);
 
         public async Task<PaginatedResult<User>> GetPaginatedUsersFilteredAsync(int pageNumber, int pageSize, List<Expression<Func<User, bool>>> predicates)
         {
             int totalRecords;
-            IQueryable<User> query = _context.Users;
+            IQueryable<User> query = _context.Users.Where(u => !u.IsDeleted);
 
             if (predicates != null && predicates.Count > 0)
             {

@@ -78,5 +78,15 @@ namespace NeromylosSuites.Repositories
                 PageSize = pageSize
             };
         }
+
+        public async Task<bool> HasActiveBookingsForUserAsync(int userId) =>
+            await _context.Bookings
+                .AnyAsync(b => !b.IsDeleted && b.UserId == userId
+                    && BookingStatuses.ActiveStatuses.Contains(b.Status));
+
+        public async Task<bool> HasActiveBookingsForVisitorAsync(int visitorId) =>
+            await _context.Bookings
+                .AnyAsync(b => !b.IsDeleted && b.VisitorId == visitorId
+                            && BookingStatuses.ActiveStatuses.Contains(b.Status));
     }
 }

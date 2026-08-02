@@ -32,7 +32,7 @@ namespace NeromylosSuites.Repositories
             var bookedRoomIds = await _context.Bookings
                 .Where(b => !b.IsDeleted
                             && b.CheckIn < checkOut && b.CheckOut > checkIn
-                            && (b.Status == BookingStatuses.Pending || b.Status == BookingStatuses.Confirmed))
+                            && BookingStatuses.ActiveStatuses.Contains(b.Status))
                 .SelectMany(b => b.Rooms)
                 .Select(r => r.Id)
                 .ToListAsync();

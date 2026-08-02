@@ -14,12 +14,14 @@ namespace NeromylosSuites.Repositories
 
         public async Task<Member?> GetMemberByPhoneNumberAsync(string phonenumber) => 
             await _context.Members
-            .Include(m => m.User)
-            .FirstOrDefaultAsync(m => m.PhoneNumber == phonenumber);
+                .Where(m => !m.IsDeleted)
+                .Include(m => m.User)
+                .FirstOrDefaultAsync(m => m.PhoneNumber == phonenumber);
 
         public async Task<User?> GetUserMemberByUsernameAsync(string username)
         {
             var UserMember = await _context.Users
+                .Where(u => !u.IsDeleted)
                 .Include(u => u.Member)
                 .Include(u => u.Role)
                 .Where(u => u.Username == username && u.Member != null)
@@ -46,7 +48,7 @@ namespace NeromylosSuites.Repositories
             List<Member> members;
 
             members = await _context.Members
-                .Where(m => m.CountryCode == countryCode)
+                .Where(m => !m.IsDeleted && m.CountryCode == countryCode)
                 .ToListAsync();
 
             return members;
@@ -55,6 +57,7 @@ namespace NeromylosSuites.Repositories
         public async Task<PaginatedResult<User>> GetPaginatedUsersMembersFilteredAsync(int pageNumber, int pageSize, List<Expression<Func<User, bool>>> predicates)
         {
             IQueryable<User> query = _context.Users
+                .Where(u => !u.IsDeleted)
                 .Include(u => u.Member)
                 .Include(u => u.Role)
                 .Where(u => u.Member != null);
