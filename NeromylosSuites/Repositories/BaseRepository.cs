@@ -21,6 +21,7 @@ namespace NeromylosSuites.Repositories
 
         public virtual Task UpdateAsync(T entity)
         {
+            entity.ModifiedAt = DateTime.UtcNow;
             _dbSet.Attach(entity);
             _context.Entry(entity).State = EntityState.Modified;
             return Task.CompletedTask;
