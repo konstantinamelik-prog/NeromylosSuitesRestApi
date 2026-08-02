@@ -11,6 +11,7 @@
         public string? Status { get; set; }
         public int? UserId { get; set; }
         public int? VisitorId { get; set; }
+        public string? GuestName { get; set; }
         public List<string>? RoomNames { get; set; }
     }
 }

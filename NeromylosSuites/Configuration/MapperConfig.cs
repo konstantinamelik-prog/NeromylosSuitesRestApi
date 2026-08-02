@@ -31,8 +31,14 @@ namespace NeromylosSuites.Configuration
                 .ForMember(dest => dest.Lastname, opt => opt.MapFrom(src => src.User.Lastname));
 
             CreateMap<Booking, BookingReadOnlyDTO>()
-                .ForMember(dest => dest.RoomNames, 
-                    opt => opt.MapFrom(src => src.Rooms.Select(r => r.Name).ToList()));
+                .ForMember(dest => dest.RoomNames,
+                    opt => opt.MapFrom(src => src.Rooms.Select(r => r.Name).ToList()))
+                .ForMember(dest => dest.GuestName,
+                    opt => opt.MapFrom(src => src.User != null
+                        ? $"{src.User.Firstname} {src.User.Lastname}" 
+                            : src.Visitor != null 
+                                ? $"{src.Visitor.Firstname} {src.Visitor.Lastname}" 
+                                : null));
 
             CreateMap<CreateBookingDTO, Booking>()
                 .ForMember(dest => dest.CheckIn, opt => opt.MapFrom(src => src.CheckIn!.Value))

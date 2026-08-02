@@ -27,7 +27,6 @@ namespace NeromylosSuites.Repositories
             List<Booking> bookings = await _context.Bookings
                 .Where(b => !b.IsDeleted && b.UserId == userId)
                 .Include(b => b.User)
-                .Include(b => b.Visitor)
                 .Include(b => b.Rooms)
                 .ToListAsync();
 
@@ -47,7 +46,11 @@ namespace NeromylosSuites.Repositories
 
         public async Task<PaginatedResult<Booking>> GetPaginatedBookingsFilteredAsync(int pageNumber, int pageSize, List<Expression<Func<Booking, bool>>> predicates)
         {
-            IQueryable<Booking> query = _context.Bookings.Where(b => !b.IsDeleted);
+            IQueryable<Booking> query = _context.Bookings
+                .Where(b => !b.IsDeleted)
+                .Include(b => b.Rooms)
+                .Include(b => b.User)
+                .Include(b => b.Visitor);
 
             if (predicates != null && predicates.Count > 0)
             {
