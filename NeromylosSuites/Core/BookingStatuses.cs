@@ -7,5 +7,10 @@
         public const string Cancelled = "CANCELLED";
         public const string Completed = "COMPLETED";
         public const string Deleted = "DELETED";
+
+        public static readonly HashSet<string> ActiveStatuses = new()
+        {
+            Pending, Confirmed, Completed
+        };
     }
 }

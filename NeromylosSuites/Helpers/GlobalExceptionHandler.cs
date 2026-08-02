@@ -73,6 +73,7 @@ namespace NeromylosSuites.Helpers
         {
             ArgumentException => (StatusCodes.Status400BadRequest, "Bad Request", true),
             EntityAlreadyExistsException => (StatusCodes.Status409Conflict, "Resource already exists", true),
+            EntityHasActiveDependenciesException => (StatusCodes.Status409Conflict, "Cannot delete: active dependencies exist", true),
             EntityNotAuthorizedException => (StatusCodes.Status401Unauthorized, "Unauthorized", true),
             EntityForbiddenException => (StatusCodes.Status403Forbidden, "Forbidden", true),
             EntityNotFoundException => (StatusCodes.Status404NotFound, "Resource not found", true),
