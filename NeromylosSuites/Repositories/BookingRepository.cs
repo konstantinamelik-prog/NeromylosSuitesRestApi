@@ -44,7 +44,8 @@ namespace NeromylosSuites.Repositories
             return bookings;
         }
 
-        public async Task<PaginatedResult<Booking>> GetPaginatedBookingsFilteredAsync(int pageNumber, int pageSize, List<Expression<Func<Booking, bool>>> predicates)
+        public async Task<PaginatedResult<Booking>> GetPaginatedBookingsFilteredAsync(
+            int pageNumber, int pageSize, List<Expression<Func<Booking, bool>>> predicates, string? sortBy, bool sortDescending)
         {
             IQueryable<Booking> query = _context.Bookings
                 .Where(b => !b.IsDeleted)
@@ -62,10 +63,20 @@ namespace NeromylosSuites.Repositories
 
             int totalRecords = await query.CountAsync();
 
+            query = sortBy switch
+            {
+                "id" => sortDescending ? query.OrderByDescending(b => b.Id) : query.OrderBy(b => b.Id),
+                "checkIn" => sortDescending ? query.OrderByDescending(b => b.CheckIn) : query.OrderBy(b => b.CheckIn),
+                "checkOut" => sortDescending ? query.OrderByDescending(b => b.CheckOut) : query.OrderBy(b => b.CheckOut),
+                "numberOfGuests" => sortDescending ? query.OrderByDescending(b => b.NumberOfGuests) : query.OrderBy(b => b.NumberOfGuests),
+                "totalPrice" => sortDescending ? query.OrderByDescending(b => b.TotalPrice) : query.OrderBy(b => b.TotalPrice),
+                "status" => sortDescending ? query.OrderByDescending(b => b.Status) : query.OrderBy(b => b.Status),
+                _ => query.OrderBy(b => b.Id)  // default, ασφαλές fallback
+            };
+
             int skip = (pageNumber - 1) * pageSize;
 
             var data = await query
-                .OrderBy(b => b.Id)
                 .Skip(skip)
                 .Take(pageSize)
                 .ToListAsync();

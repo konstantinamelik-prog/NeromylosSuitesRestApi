@@ -36,6 +36,11 @@ namespace NeromylosSuites.Services
             // BookingStatuses.Deleted μόνο μέσω DELETE endpoint
         };
 
+        private static readonly HashSet<string> ValidSortFields = new()
+        {
+            "id", "checkIn", "checkOut", "numberOfGuests", "totalPrice", "status" 
+        };
+
         public async Task<BookingReadOnlyDTO> CreateBookingAsync(CreateBookingDTO request)
         {
             if (request.CheckOut <= request.CheckIn)
@@ -185,8 +190,14 @@ namespace NeromylosSuites.Services
         }
 
         public async Task<PaginatedResult<BookingReadOnlyDTO>> GetPaginatedBookingsFilteredAsync(
-            int pageNumber, int pageSize, BookingFiltersDTO bookingFiltersDTO)
+    int pageNumber, int pageSize, BookingFiltersDTO bookingFiltersDTO)
         {
+            if (!string.IsNullOrEmpty(bookingFiltersDTO.SortBy) && !ValidSortFields.Contains(bookingFiltersDTO.SortBy))
+            {
+                throw new ArgumentException(
+                    $"Invalid sortBy '{bookingFiltersDTO.SortBy}'. Valid values are: {string.Join(", ", ValidSortFields)}");
+            }
+
             List<Expression<Func<Booking, bool>>> predicates = [];
 
             if (bookingFiltersDTO.CheckIn.HasValue)
@@ -201,9 +212,15 @@ namespace NeromylosSuites.Services
             {
                 predicates.Add(b => b.Status == bookingFiltersDTO.Status);
             }
+            if (!string.IsNullOrEmpty(bookingFiltersDTO.Lastname))
+            {
+                predicates.Add(b =>
+                    (b.User != null && b.User.Lastname.Contains(bookingFiltersDTO.Lastname)) ||
+                    (b.Visitor != null && b.Visitor.Lastname.Contains(bookingFiltersDTO.Lastname)));
+            }
 
-            var result = await _unitOfWork.BookingRepository.GetPaginatedBookingsFilteredAsync(pageNumber, pageSize,
-                predicates);
+            var result = await _unitOfWork.BookingRepository.GetPaginatedBookingsFilteredAsync(
+                pageNumber, pageSize, predicates, bookingFiltersDTO.SortBy, bookingFiltersDTO.SortDescending);
 
             var dtoResult = new PaginatedResult<BookingReadOnlyDTO>()
             {
