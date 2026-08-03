@@ -191,11 +191,11 @@ namespace NeromylosSuites.Services
 
             if (bookingFiltersDTO.CheckIn.HasValue)
             {
-                predicates.Add(b => b.CheckIn == bookingFiltersDTO.CheckIn);
+                predicates.Add(b => b.CheckIn >= bookingFiltersDTO.CheckIn);
             }
             if (bookingFiltersDTO.CheckOut.HasValue)
             {
-                predicates.Add(b => b.CheckOut == bookingFiltersDTO.CheckOut);
+                predicates.Add(b => b.CheckOut <= bookingFiltersDTO.CheckOut);
             }
             if (!string.IsNullOrEmpty(bookingFiltersDTO.Status))
             {
