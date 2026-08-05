@@ -190,7 +190,7 @@ namespace NeromylosSuites.Services
         }
 
         public async Task<PaginatedResult<BookingReadOnlyDTO>> GetPaginatedBookingsFilteredAsync(
-    int pageNumber, int pageSize, BookingFiltersDTO bookingFiltersDTO)
+            int pageNumber, int pageSize, BookingFiltersDTO bookingFiltersDTO)
         {
             if (!string.IsNullOrEmpty(bookingFiltersDTO.SortBy) && !ValidSortFields.Contains(bookingFiltersDTO.SortBy))
             {
