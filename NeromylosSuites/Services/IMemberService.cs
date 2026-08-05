@@ -12,7 +12,7 @@ namespace NeromylosSuites.Services
         Task<UserReadOnlyDTO> GetUserWithMemberByIdAsync(int userId);
         Task<List<BookingReadOnlyDTO>> GetMemberBookingsAsync(int userId);
         Task<List<MemberReadOnlyDTO>> GetMembersByCountryCodeAsync(string countryCode);
-        Task<PaginatedResult<UserReadOnlyDTO>> GetPaginatedMembersFilteredAsync(
+        Task<PaginatedResult<MemberReadOnlyDTO>> GetPaginatedMembersFilteredAsync(
             int pageNumber, int pageSize, MemberFiltersDTO memberFiltersDTO);
     }
 }

@@ -111,28 +111,34 @@ namespace NeromylosSuites.Services
             return _mapper.Map<List<MemberReadOnlyDTO>>(members);
         }
 
-        public async Task<PaginatedResult<UserReadOnlyDTO>> GetPaginatedMembersFilteredAsync(
+        public async Task<PaginatedResult<MemberReadOnlyDTO>> GetPaginatedMembersFilteredAsync(
             int pageNumber, int pageSize, MemberFiltersDTO memberFiltersDTO)
         {
             List<Expression<Func<User, bool>>> predicates = [];
 
             if (!string.IsNullOrEmpty(memberFiltersDTO.CountryCode))
             {
-                predicates.Add(u => u.Member != null && u.Member.CountryCode == memberFiltersDTO.CountryCode);
+                predicates.Add(m => m.Member != null && m.Member.CountryCode == memberFiltersDTO.CountryCode);
+            }
+            if (!string.IsNullOrEmpty(memberFiltersDTO.Lastname))
+            {
+                predicates.Add(m => m.Lastname.Contains(memberFiltersDTO.Lastname));
             }
 
             var result = await _unitOfWork.MemberRepository
                 .GetPaginatedUsersMembersFilteredAsync(pageNumber, pageSize, predicates);
 
-            var dtoResult = new PaginatedResult<UserReadOnlyDTO>()
+            var members = result.Data.Select(m => m.Member!).ToList();
+
+            var dtoResult = new PaginatedResult<MemberReadOnlyDTO>()
             {
-                Data = _mapper.Map<List<UserReadOnlyDTO>>(result.Data),
+                Data = _mapper.Map<List<MemberReadOnlyDTO>>(members),
                 TotalRecords = result.TotalRecords,
                 PageNumber = result.PageNumber,
                 PageSize = result.PageSize
             };
 
-            _logger.LogInformation("Retrieved {Count} users", dtoResult.Data.Count);
+            _logger.LogInformation("Retrieved {Count} members", dtoResult.Data.Count);
             return dtoResult;
         }
     }

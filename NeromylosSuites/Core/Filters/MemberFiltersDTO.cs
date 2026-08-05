@@ -2,6 +2,7 @@
 {
     public class MemberFiltersDTO
     {
+        public string? Lastname { get; set; }
         public string? CountryCode { get; set; }
     }
 }
