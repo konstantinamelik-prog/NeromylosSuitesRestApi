@@ -124,6 +124,10 @@ namespace NeromylosSuites.Services
             {
                 predicates.Add(m => m.Lastname.Contains(memberFiltersDTO.Lastname));
             }
+            if (!string.IsNullOrEmpty(memberFiltersDTO.Email))
+            {
+                predicates.Add(m => m.Email.Contains(memberFiltersDTO.Email));
+            }
 
             var result = await _unitOfWork.MemberRepository
                 .GetPaginatedUsersMembersFilteredAsync(pageNumber, pageSize, predicates);
